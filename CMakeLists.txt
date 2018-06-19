@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.8)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 # Set as TRUE to link with openssl dependencies in lib folder. Set to FALSE otherwise.
-set(OPENSSL_LOCAL_LINK FALSE)
+set(OPENSSL_LOCAL_LINK TRUE)
 
 # --- PATH ---
 
@@ -102,7 +102,8 @@ else ()
 	### Reject potentially unsafe format string arguments
 	## -Werror=implicit-function-declaration
 	### Reject missing function prototypes
-    add_compile_options("-Wall" "-Wextra" "-Werror" "-pedantic" "-Werror=format-security" "-Werror=implicit-function-declaration")
+    	#add_compile_options("-Wall" "-Wextra" "-Werror" "-pedantic" "-Werror=format-security" "-Werror=implicit-function-declaration")
+	add_compile_options("-Wall" "-Wextra" "-pedantic" "-Werror=format-security" "-Werror=implicit-function-declaration")
 endif ()
 
 if (WIN32)
@@ -137,11 +138,13 @@ endif ()
 
 # Search OpenSSL
 if (UNIX)
-	include_directories(${OPENSSL_INCLUDE_DIR})
 	find_package(PkgConfig REQUIRED)
-	pkg_search_module(OPENSSL REQUIRED openssl)
-	find_package(OPENSSL REQUIRED)
-	message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
+	if (NOT OPENSSL_LOCAL_LINK)
+		include_directories(${OPENSSL_INCLUDE_DIR})
+		pkg_search_module(OPENSSL REQUIRED openssl)
+		find_package(OPENSSL REQUIRED)
+		message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
+	endif ()
 elseif (WIN32)
 	#set(OPENSSL_ROOT_DIR CACHE PATH "C:/OpenSSL-Win64")
 	set(OPENSSL_INCLUDE "C:\\OpenSSL-Win64\\include")

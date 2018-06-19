@@ -20,6 +20,7 @@
 #include <uecm/crypto/impl/encoding/base64_decode_impl.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 static const unsigned char uecm_base64_table[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

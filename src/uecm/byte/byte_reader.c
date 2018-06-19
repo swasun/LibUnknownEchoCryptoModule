@@ -33,7 +33,7 @@ bool uecm_byte_read_is_int(uecm_byte_stream *stream, int position, int n) {
         return false;
     }
 
-    if (position + 3 >= stream->size) {
+    if ((size_t)position + 3 >= stream->size) {
         ei_stacktrace_push_msg("Failed to get int because this would cause a buffer underflow");
         return false;
     }

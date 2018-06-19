@@ -42,16 +42,23 @@
  *
  * @source: https://stackoverflow.com/a/9629354
  * @source: https://stackoverflow.com/a/7317613
+ * @todo fix for unsigned char
  */
 #if defined(__GNUC__)
 
-#define ISUNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
+//_Pragma("GCC diagnostic push")
+//_Pragma("GCC diagnostic ignored \"-Werror\"")
+//#pragma GCC diagnostic ignored "-Werror")
+
+//#define ISUNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
+
+//#pragma GCC diagnostic pop
+//_Pragma("GCC diagnostic pop")
+
+#define ISUNSIGNED(a) (a >= 0 && ~a >= 0)
 
 #else
 
-/**
- * @todo fix for unsigned char
- */
 #define ISUNSIGNED(a) (a >= 0 && ~a >= 0)
 
 #endif
@@ -88,7 +95,7 @@ __pragma (warning (pop)) \
  */
 #define uecm_safe_alloc(var, type, size) \
 DISABLE_WIN32_PRAGMA_WARN(4127) \
-	if ((ISUNSIGNED(size) && size == 0) || (size <= 0)) { \
+	if ((ISUNSIGNED(size) && size == 0) || (!ISUNSIGNED(size) && size <= 0)) { \
 DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with a negative or null size"); \
 		return 0; \
@@ -100,7 +107,7 @@ DISABLE_WIN32_PRAGMA_WARN_END \
 
 #define uecm_safe_alloc_ret(var, type, size, ret) \
 DISABLE_WIN32_PRAGMA_WARN(4127) \
-	if ((ISUNSIGNED(size) && size == 0) || (size <= 0)) { \
+	if ((ISUNSIGNED(size) && size == 0) || (!ISUNSIGNED(size) && size <= 0)) { \
 DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with a negative or null size"); \
 		ret = 0; \
@@ -129,7 +136,7 @@ DISABLE_WIN32_PRAGMA_WARN_END \
  */
 #define uecm_safe_alloc_or_goto(var, type, size, label) \
 DISABLE_WIN32_PRAGMA_WARN(4127) \
-	if ((ISUNSIGNED(size) && size == 0) || (size <= 0)) { \
+	if ((ISUNSIGNED(size) && size == 0) || (!ISUNSIGNED(size) && size <= 0)) { \
 DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with a negative or null size"); \
 		goto label; \
@@ -155,7 +162,7 @@ DISABLE_WIN32_PRAGMA_WARN_END \
 		return 0; \
 	} \
 DISABLE_WIN32_PRAGMA_WARN(4127) \
-	if (old_size == 0 && ((ISUNSIGNED(more_size) && more_size == 0) || (more_size <= 0))) { \
+	if (old_size == 0 && ((ISUNSIGNED(more_size) && more_size == 0) || (!ISUNSIGNED(more_size) && more_size <= 0))) { \
 DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with an old_size equal to 0 and a null or negative more_size"); \
 	    return 0; \
@@ -180,7 +187,7 @@ DISABLE_WIN32_PRAGMA_WARN_END \
 	    goto label; \
 	} \
 DISABLE_WIN32_PRAGMA_WARN(4127) \
-	if (old_size == 0 && ((ISUNSIGNED(more_size) && more_size == 0) || (more_size <= 0))) { \
+	if (old_size == 0 && ((ISUNSIGNED(more_size) && more_size == 0) || (!ISUNSIGNED(more_size) && more_size <= 0))) { \
 DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with an old_size equal to 0 and a null or negative more_size '%d'", (int)more_size); \
 	    goto label; \
