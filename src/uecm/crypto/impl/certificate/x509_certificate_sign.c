@@ -124,12 +124,12 @@ bool uecm_x509_certificate_verify(uecm_x509_certificate *signed_certificate, uec
 	ei_check_parameter_or_return(signed_certificate);
 	ei_check_parameter_or_return(ca_certificate);
 
-	if (!(store = X509_STORE_new())) {
+	if ((store = X509_STORE_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "X509_STORE_new");
         goto clean_up;
 	}
 
-    if (!(verify_ctx = X509_STORE_CTX_new())) {
+    if ((verify_ctx = X509_STORE_CTX_new()) == NULL) {
         uecm_openssl_error_handling(error_buffer, "X509_STORE_CTX_new");
         goto clean_up;
     }

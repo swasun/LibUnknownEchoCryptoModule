@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
-    if (!(message = uecm_bytes_create_from_string(argv[1]))) {
+    if ((message = uecm_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     message_length = strlen(argv[1]);
 
     ei_logger_info("Creating new uecm_hasher");
-    if (!(h = uecm_hasher_create())) {
+    if ((h = uecm_hasher_create()) == NULL) {
         ei_stacktrace_push_msg("Failed to create uecm_hasher")
         goto clean_up;
     }
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     ei_logger_info("Has successfully initialized uecm_hasher");
 
     ei_logger_info("Hash processing...");
-    if (!(digest = uecm_hasher_digest(h, message, message_length, &digest_length))) {
+    if ((digest = uecm_hasher_digest(h, message, message_length, &digest_length)) == NULL) {
         ei_stacktrace_push_msg("Failed to hash message with SHA-256 digest algorithm")
         goto clean_up;
     }

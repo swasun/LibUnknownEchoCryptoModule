@@ -46,7 +46,7 @@ void uecm_private_key_destroy(uecm_private_key *sk);
 
 int uecm_private_key_size(uecm_private_key *sk);
 
-bool uecm_private_key_is_valid(uecm_private_key *sk);
+//bool uecm_private_key_is_valid(uecm_private_key *sk);
 
 void *uecm_private_key_get_impl(uecm_private_key *sk);
 

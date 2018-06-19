@@ -23,7 +23,7 @@
 uecm_hasher *uecm_hasher_sha256_create() {
     uecm_hasher *h;
 
-    if (!(h = uecm_hasher_create())) {
+    if ((h = uecm_hasher_create()) == NULL) {
         ei_stacktrace_push_msg("Failed to create uecm_hasher");
         return NULL;
     }

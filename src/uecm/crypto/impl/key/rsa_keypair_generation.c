@@ -81,12 +81,12 @@ RSA *uecm_rsa_keypair_gen(int bits) {
         goto clean_up;
     }
 
-    if (!(rsa_key_pair = RSA_new())) {
+    if ((rsa_key_pair = RSA_new()) == NULL) {
         uecm_openssl_error_handling(error_buffer, "RSA_new");
         goto clean_up;
     }
 
-    if (!(bne = BN_new())) {
+    if ((bne = BN_new()) == NULL) {
         uecm_openssl_error_handling(error_buffer, "BN_new");
         RSA_free(rsa_key_pair);
         rsa_key_pair = NULL;
@@ -109,7 +109,7 @@ RSA *uecm_rsa_keypair_gen(int bits) {
         goto clean_up;
     }
     uecm_progress_bar_finish_and_print(progress_bar);*/
-	if (!(ret = RSA_generate_key_ex(rsa_key_pair, bits, bne, NULL))) {
+	if ((ret = RSA_generate_key_ex(rsa_key_pair, bits, bne, NULL)) == 0) {
 		uecm_openssl_error_handling(error_buffer, "RSA_generate_key_ex");
 		RSA_free(rsa_key_pair);
 		rsa_key_pair = NULL;

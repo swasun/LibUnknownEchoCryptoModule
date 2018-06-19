@@ -87,7 +87,7 @@ bool uecm_signer_sign_buffer(uecm_signer *signer, const unsigned char *buf, size
 		goto clean_up;
 	}
 
-	if (!(*signature = OPENSSL_malloc(sizeof(unsigned char) * (*signature_length)))) {
+	if ((*signature = OPENSSL_malloc(sizeof(unsigned char) * (*signature_length))) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Alloc signature");
 		goto clean_up;
 	}

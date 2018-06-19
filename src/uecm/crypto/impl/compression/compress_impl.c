@@ -21,8 +21,12 @@
 #include <uecm/crypto/impl/errorHandling/zlib_error_handling.h>
 #include <uecm/alloc.h>
 
-#include <stdlib.h>
+#include <ei/ei.h>
+
 #include <zlib.h>
+
+#include <stdlib.h>
+#include <limits.h>
 
 #define CHUNK 16384
 
@@ -31,12 +35,19 @@ bool uecm_deflate_compress(unsigned char *plaintext, size_t plaintext_len, unsig
     Byte *compr;
     int error_code;
 
-    len = compressBound(plaintext_len);
+	if (plaintext_len > ULONG_MAX) {
+		ei_stacktrace_push_msg("plaintext_len=%ld > ULONG_MAX=%ld", plaintext_len, ULONG_MAX);
+		return false;
+	}
+
+	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    len = compressBound((uLong)plaintext_len);
     tmp_compr_len = len;
 
     uecm_safe_alloc(compr, Byte, len);
 
-    if ((error_code = compress(compr, &tmp_compr_len, (const Bytef*)plaintext, plaintext_len)) != Z_OK) {
+	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    if ((error_code = compress(compr, &tmp_compr_len, (const Bytef *)plaintext, (uLong)plaintext_len)) != Z_OK) {
         uecm_zlib_error_handling(error_code);
         return false;
     }
@@ -52,10 +63,17 @@ bool uecm_inflate_decompress(unsigned char *compressed_text, size_t compressed_l
     Byte *decompr;
     int error_code;
 
+	if (decompressed_len > ULONG_MAX) {
+		ei_stacktrace_push_msg("plaintext_len=%ld > ULONG_MAX=%ld", decompressed_len, ULONG_MAX);
+		return false;
+	}
+
+	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     tmp_decompr_len = (uLong)decompressed_len;
     uecm_safe_alloc(decompr, Byte, tmp_decompr_len);
 
-    if ((error_code = uncompress(decompr, &tmp_decompr_len, (Byte *)compressed_text, compressed_len)) != Z_OK) {
+	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    if ((error_code = uncompress(decompr, &tmp_decompr_len, (Byte *)compressed_text, (uLong)compressed_len)) != Z_OK) {
         uecm_zlib_error_handling(error_code);
         return false;
     }
@@ -80,6 +98,7 @@ bool uecm_deflate_compress_file(FILE *source, FILE *dest, int level) {
     z_stream strm;
     unsigned char in[CHUNK];
     unsigned char out[CHUNK];
+	size_t r;
 
     /* allocate deflate state */
     strm.zalloc = Z_NULL;
@@ -93,8 +112,14 @@ bool uecm_deflate_compress_file(FILE *source, FILE *dest, int level) {
 
     /* compress until end of file */
     do {
-
-        strm.avail_in = fread(in, 1, CHUNK, source);
+		r = fread(in, 1, CHUNK, source);
+		if (r > UINT_MAX) {
+			ei_stacktrace_push_msg("Stop compress to prevent data loss because fread result > to UINT_MAX");
+			(void)deflateEnd(&strm);
+			return false;
+		}
+		/* Safe to cast size_t to uInt as r is < to UINT_MAX */
+		strm.avail_in = (uInt)r;
         if (ferror(source)) {
             (void)deflateEnd(&strm);
             uecm_zlib_error_handling(error_code);
@@ -166,6 +191,7 @@ bool uecm_inflate_decompress_file(FILE *source, FILE *dest) {
     z_stream strm;
     unsigned char in[CHUNK];
     unsigned char out[CHUNK];
+	size_t r;
 
     /* allocate inflate state */
     strm.zalloc = Z_NULL;
@@ -181,7 +207,14 @@ bool uecm_inflate_decompress_file(FILE *source, FILE *dest) {
 
     /* decompress until deflate stream ends or end of file */
     do {
-        strm.avail_in = fread(in, 1, CHUNK, source);
+		r = fread(in, 1, CHUNK, source);
+		if (r > UINT_MAX) {
+			ei_stacktrace_push_msg("Stop compress to prevent data loss because fread result > to UINT_MAX");
+			(void)deflateEnd(&strm);
+			return false;
+		}
+		/* Safe to cast size_t to uInt as r is < to UINT_MAX */
+		strm.avail_in = (uInt)r;
         if (ferror(source)) {
             (void)inflateEnd(&strm);
             uecm_zlib_error_handling(error_code);

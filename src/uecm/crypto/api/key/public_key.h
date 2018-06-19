@@ -43,7 +43,7 @@ void uecm_public_key_destroy(uecm_public_key *pk);
 
 int uecm_public_key_size(uecm_public_key *pk);
 
-bool uecm_public_key_is_valid(uecm_public_key *pk);
+//bool uecm_public_key_is_valid(uecm_public_key *pk);
 
 void *uecm_public_key_get_impl(uecm_public_key *pk);
 

@@ -67,7 +67,7 @@ char *uecm_strcat_variadic(const char *format, ...) {
 		}
 	}
 
-	if (!(s = uecm_string_builder_create())) {
+	if ((s = uecm_string_builder_create()) == NULL) {
 		ei_stacktrace_push_msg("Failed to create empty string builder");
 		return NULL;
 	}
@@ -169,12 +169,11 @@ char *uecm_strcat_variadic(const char *format, ...) {
 
 int uecm_find_str_in_data(char *data, const char *query) {
 	char *tmp_data;
-	size_t data_size, query_len;
-	size_t position;
+	int data_size, query_len, position;
 
 	tmp_data = data;
-	data_size = strlen(data);
-	query_len = strlen(query);
+	data_size = (int)strlen(data);
+	query_len = (int)strlen(query);
 	position = 0;
 
 	while (1) {
@@ -329,7 +328,7 @@ bool uecm_int_to_string(int num, char *buffer, int radix) {
 	while (num != 0) {
 		remainder = num % radix;
 		buffer[i++] =
-				(remainder > 9) ? (remainder - 10) + 'a' : remainder + '0';
+				(char)((remainder > 9) ? (remainder - 10) + 'a' : remainder + '0');
 		num = num / radix;
 	}
 
@@ -373,7 +372,7 @@ bool uecm_long_to_string(long num, char *buffer, int radix) {
 	while (num != 0) {
 		remainder = num % radix;
 		buffer[i++] =
-				(remainder > 9) ? (remainder - 10) + 'a' : remainder + '0';
+				(char)((remainder > 9) ? (remainder - 10) + 'a' : remainder + '0');
 		num = num / radix;
 	}
 
@@ -507,7 +506,8 @@ char *uecm_substring(char *string, int begin_index, int end_index) {
 
 char *uecm_get_until_symbol(char *str, int begin, char symbol, int *end) {
 	char *line;
-	int i, cr, size, line_size;
+	int i, cr, line_size;
+	size_t size;
 
 	line = NULL;
 	cr = -1;
@@ -567,7 +567,7 @@ char *uecm_string_uppercase(const char *input) {
 	uecm_safe_alloc(output, char, length);
 
 	for (i = 0; i < length; i++) {
-		output[i] = toupper(input[i]);
+		output[i] = (char)toupper(input[i]);
 	}
 
 	return output;

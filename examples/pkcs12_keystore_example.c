@@ -28,6 +28,8 @@
 int main(int argc, char **argv) {
     uecm_pkcs12_keystore *keystore;
 
+	keystore = NULL;
+
     if (argc != 3) {
         fprintf(stderr, "[ERROR] ./%s <file_path> <passphrase>\n", argv[0]);
         exit(1);
@@ -40,7 +42,7 @@ int main(int argc, char **argv) {
 		goto clean_up;
 	}
 
-    if (!(keystore = uecm_pkcs12_keystore_load(argv[1], argv[2]))) {
+    if ((keystore = uecm_pkcs12_keystore_load(argv[1], argv[2])) == NULL) {
         ei_stacktrace_push_msg("Failed to load specified pkcs12 keystore");
         goto clean_up;
     }

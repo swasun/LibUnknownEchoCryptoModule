@@ -56,17 +56,17 @@ uecm_crypto_metadata *uecm_crypto_metadata_create_default() {
         goto clean_up_fail;
     }
 
-    if (!(cipher_name = uecm_string_create_from(UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME))) {
+    if ((cipher_name = uecm_string_create_from(UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME)) == NULL) {
         ei_stacktrace_push_msg("Failed to get default cipher name");
         goto clean_up_fail;
     }
 
-    if (!(digest_name = uecm_string_create_from(UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME))) {
+    if ((digest_name = uecm_string_create_from(UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) == NULL) {
         ei_stacktrace_push_msg("Failed to get default digest name");
         goto clean_up_fail;
     }
 
-    if (!(sym_key = uecm_sym_key_create_random())) {
+    if ((sym_key = uecm_sym_key_create_random()) == NULL) {
         ei_stacktrace_push_msg("Failed to generate random sym key");
         goto clean_up_fail;
     }
@@ -138,7 +138,7 @@ uecm_crypto_metadata *uecm_crypto_metadata_write_if_not_exist(const char *privat
             ei_logger_stacktrace("Failed to check if crypto metadata already exists");
             ei_stacktrace_clean_up();
         }
-        if (!(our_crypto_metadata = uecm_crypto_metadata_create_default())) {
+        if ((our_crypto_metadata = uecm_crypto_metadata_create_default()) == NULL) {
             ei_stacktrace_push_msg("Failed to create random crypto metadata");
             uecm_crypto_metadata_destroy_all(our_crypto_metadata);
             return NULL;
@@ -150,7 +150,7 @@ uecm_crypto_metadata *uecm_crypto_metadata_write_if_not_exist(const char *privat
             return NULL;
         }
     } else {
-        if (!(our_crypto_metadata = uecm_crypto_metadata_create_empty())) {
+        if ((our_crypto_metadata = uecm_crypto_metadata_create_empty()) == NULL) {
             ei_stacktrace_push_msg("Failed to create empty crypto metadata");
             uecm_crypto_metadata_destroy_all(our_crypto_metadata);
             return NULL;

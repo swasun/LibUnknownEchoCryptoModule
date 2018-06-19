@@ -27,7 +27,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-bool uecm_byte_writer_append_bytes(uecm_byte_stream *stream, unsigned char *bytes, long bytes_len) {
+bool uecm_byte_writer_append_bytes(uecm_byte_stream *stream, unsigned char *bytes, size_t bytes_len) {
 	ei_check_parameter_or_return(stream);
     ei_check_parameter_or_return(bytes);
     ei_check_parameter_or_return(bytes_len > 0 && bytes_len != 18446744073709551615UL);
@@ -45,7 +45,7 @@ bool uecm_byte_writer_append_bytes(uecm_byte_stream *stream, unsigned char *byte
 }
 
 bool uecm_byte_writer_append_string(uecm_byte_stream *stream, const char *string) {
-    long string_len;
+    size_t string_len;
 
     ei_check_parameter_or_return(stream);
     ei_check_parameter_or_return(string);

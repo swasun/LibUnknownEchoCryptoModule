@@ -32,7 +32,7 @@ static bool generate_certificate(char *CN, uecm_x509_certificate **certificate, 
 	result = false;
 	parameters = NULL;
 
-	if (!(parameters = uecm_x509_certificate_parameters_create())) {
+	if ((parameters = uecm_x509_certificate_parameters_create()) == NULL) {
 		ei_stacktrace_push_msg("Failed to create x509 parameters structure");
 		return false;
 	}
@@ -80,7 +80,7 @@ uecm_pkcs12_keystore *uecm_pkcs12_keystore_create_random(char *CN, char *friendl
         return NULL;
     }
 
-    if (!(keystore = uecm_pkcs12_keystore_create(certificate, private_key, friendly_name))) {
+    if ((keystore = uecm_pkcs12_keystore_create(certificate, private_key, friendly_name)) == NULL) {
         uecm_x509_certificate_destroy(certificate);
         uecm_private_key_destroy(private_key);
         ei_stacktrace_push_msg("Failed to create keystore from random certificate and private key");
@@ -100,7 +100,7 @@ uecm_pkcs12_keystore *uecm_pkcs12_keystore_create_from_files(char *certificate_p
         return NULL;
     }
 
-    if (!(keystore = uecm_pkcs12_keystore_create(certificate, private_key, friendly_name))) {
+    if ((keystore = uecm_pkcs12_keystore_create(certificate, private_key, friendly_name)) == NULL) {
         uecm_x509_certificate_destroy(certificate);
         uecm_private_key_destroy(private_key);
         ei_stacktrace_push_msg("Failed to create keystore from '%s' and '%s' files", certificate_path, private_key_path);

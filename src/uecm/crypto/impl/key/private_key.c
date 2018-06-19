@@ -68,10 +68,10 @@ uecm_private_key *uecm_private_key_create(uecm_private_key_type key_type, void *
 
 	sk->bits = bits;
 
-	if (!uecm_private_key_is_valid(sk)) {
+	/*if (!uecm_private_key_is_valid(sk)) {
 		uecm_private_key_destroy(sk);
 		return NULL;
-	}
+	}*/
 
 	return sk;
 }
@@ -95,7 +95,7 @@ int uecm_private_key_size(uecm_private_key *sk) {
 	return -1;
 }
 
-bool uecm_private_key_is_valid(uecm_private_key *sk) {
+/*bool uecm_private_key_is_valid(uecm_private_key *sk) {
 	return true;
 
 	if (sk->type == RSA_PRIVATE_KEY) {
@@ -105,7 +105,7 @@ bool uecm_private_key_is_valid(uecm_private_key *sk) {
 	ei_stacktrace_push_msg("Not implemented key type");
 
 	return false;
-}
+}*/
 
 void *uecm_private_key_get_impl(uecm_private_key *sk) {
 	if (!sk) {

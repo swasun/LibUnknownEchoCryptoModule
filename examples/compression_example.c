@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized.");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
-    if (!(message = uecm_bytes_create_from_string(argv[1]))) {
+    if ((message = uecm_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -66,14 +66,14 @@ int main(int argc, char **argv) {
     ei_logger_info("Succefully converted parameter to bytes");
 
     ei_logger_info("Compressing message...");
-    if (!(compressed = uecm_compress_buf(message, message_length, &compressed_length))) {
+    if ((compressed = uecm_compress_buf(message, message_length, &compressed_length)) == NULL) {
         ei_stacktrace_push_msg("Failed to compress message")
         goto clean_up;
     }
     ei_logger_info("Message has been successfully compressed");
 
     ei_logger_info("Decompressing message...");
-    if (!(decompressed = uecm_decompress_buf(compressed, compressed_length, message_length))) {
+    if ((decompressed = uecm_decompress_buf(compressed, compressed_length, message_length)) == NULL) {
         ei_stacktrace_push_msg("Failed to decompress message")
         goto clean_up;
     }

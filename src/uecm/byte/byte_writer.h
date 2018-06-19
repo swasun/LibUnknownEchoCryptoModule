@@ -35,7 +35,7 @@
 
 #include <stddef.h>
 
-bool uecm_byte_writer_append_bytes(uecm_byte_stream *stream, unsigned char *bytes, long bytes_len);
+bool uecm_byte_writer_append_bytes(uecm_byte_stream *stream, unsigned char *bytes, size_t bytes_len);
 
 bool uecm_byte_writer_append_string(uecm_byte_stream *stream, const char *string);
 

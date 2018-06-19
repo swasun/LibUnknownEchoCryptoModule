@@ -82,7 +82,8 @@ unsigned char *uecm_byte_stream_get_data(uecm_byte_stream *stream) {
 
 size_t uecm_byte_stream_get_position(uecm_byte_stream *stream) {
 	if (!stream) {
-        return -1;
+		ei_stacktrace_push_msg("Specified stream ptr is null");
+        return 0;
     }
 
     return stream->position;
@@ -106,7 +107,8 @@ bool uecm_byte_stream_set_position(uecm_byte_stream *stream, size_t position) {
 
 size_t uecm_byte_stream_get_size(uecm_byte_stream *stream) {
     if (!stream) {
-        return -1;
+		ei_stacktrace_push_msg("Specified stream ptr is null");
+        return 0;
     }
 
     return stream->position;

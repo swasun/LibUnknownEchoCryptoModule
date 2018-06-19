@@ -17,32 +17,18 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
-/**
- *  @file      file_utility.h
- *  @brief     File system utils functions.
- *  @author    Charly Lamothe
- *  @copyright GNU Public License.
- */
+#ifndef UNKNOWNECHOCRYPTOMODULE_SSIZE_T_H
+#define UNKNOWNECHOCRYPTOMODULE_SSIZE_T_H
 
-#ifndef UNKNOWNECHOCRYPTOMODULE_FILE_UTILITY_H
-#define UNKNOWNECHOCRYPTOMODULE_FILE_UTILITY_H
+#if defined(_MSC_VER)
 
-#include <stddef.h>
-#include <stdio.h>
+#include <basetsd.h>
+typedef SSIZE_T ssize_t;
 
-#include <uecm/bool.h>
-#include <uecm/ssize_t.h>
+#elif defined(__unix__)
 
-bool uecm_is_file_exists(const char *file_name);
+#include <unistd.h>
 
-ssize_t uecm_get_file_size(FILE *fd);
-
-char *uecm_read_file(const char *file_name);
-
-bool uecm_write_file(const char *file_name, char *data);
-
-unsigned char *uecm_read_binary_file(const char *file_name, size_t *size);
-
-bool uecm_write_binary_file(const char *file_name, unsigned char *data, size_t size);
+#endif
 
 #endif

@@ -30,6 +30,7 @@
 #include <openssl/rsa.h>
 
 #include <string.h>
+#include <limits.h>
 
 
 static bool generate_signed_key_pair(X509 *ca_crt, EVP_PKEY *ca_key, char *CN, X509 **crt, EVP_PKEY **key);
@@ -53,7 +54,7 @@ bool uecm_x509_certificate_generate_self_signed_ca(char *CN, uecm_x509_certifica
 
 	ei_check_parameter_or_return(CN);
 
-	if (!(parameters = uecm_x509_certificate_parameters_create())) {
+	if ((parameters = uecm_x509_certificate_parameters_create()) == NULL) {
 		ei_stacktrace_push_msg("Failed to create x509 parameters structure");
 		return false;
 	}
@@ -116,7 +117,7 @@ bool uecm_x509_certificate_generate_signed(uecm_x509_certificate *ca_certificate
 		goto clean_up_failed;
 	}
 
-	if (!(*certificate = uecm_x509_certificate_create_empty())) {
+	if ((*certificate = uecm_x509_certificate_create_empty()) == NULL) {
 		ei_stacktrace_push_msg("Failed to generate new x509 certificate");
 		goto clean_up_failed;
 	}
@@ -126,12 +127,12 @@ bool uecm_x509_certificate_generate_signed(uecm_x509_certificate *ca_certificate
 		goto clean_up_failed;
 	}
 
-	if (!(rsa = EVP_PKEY_get1_RSA(private_key_impl))) {
+	if ((rsa = EVP_PKEY_get1_RSA(private_key_impl)) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Failed to get RSA from EVP_PKEY");
 		goto clean_up_failed;
 	}
 
-	if(!(*private_key = uecm_private_key_create(RSA_PRIVATE_KEY, rsa, RSA_size(rsa)))) {
+	if((*private_key = uecm_private_key_create(RSA_PRIVATE_KEY, rsa, RSA_size(rsa))) == NULL) {
 		ei_stacktrace_push_msg("Failed to create new private key from RSA impl");
 		goto clean_up_failed;
 	}
@@ -168,7 +169,7 @@ static bool generate_signed_key_pair(X509 *ca_crt, EVP_PKEY *ca_key, char *CN, X
 		return false;
 	}
 
-	if (!(*crt = X509_new())) {
+	if ((*crt = X509_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Failed to create new X509");
 		goto clean_up_failed;
 	}
@@ -220,24 +221,31 @@ static bool generate_key_csr(EVP_PKEY **key, char *CN, X509_REQ **req) {
 	char *error_buffer;
 	RSA *rsa;
 	X509_NAME *name;
+	size_t CN_size;
 
 	ei_check_parameter_or_return(CN);
 
 	error_buffer = NULL;
 	rsa = NULL;
+	CN_size = strlen(CN);
 
-	if (!(*key = EVP_PKEY_new())) {
+	if (CN_size > INT_MAX) {
+		ei_stacktrace_push_msg("X509_NAME_add_entry_by_txt() need length in int but CN_size > INT_MAX");
+		return false;
+	}
+
+	if ((*key = EVP_PKEY_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "EVP_PKEY_new");
 		goto clean_up_failed;
 	}
 
-	if (!(*req = X509_REQ_new())) {
+	if ((*req = X509_REQ_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "X509_REQ_new");
 		goto clean_up_failed;
 	}
 
 	/* @todo get default bits length in defines */
-    if (!(rsa = uecm_rsa_keypair_gen(UNKNOWNECHOCRYPTOMODULE_DEFAULT_RSA_KEY_BITS))) {
+    if ((rsa = uecm_rsa_keypair_gen(UNKNOWNECHOCRYPTOMODULE_DEFAULT_RSA_KEY_BITS)) == NULL) {
 		ei_stacktrace_push_msg("Failed to gen RSA keypair");
 		goto clean_up_failed;
 	}
@@ -251,7 +259,7 @@ static bool generate_key_csr(EVP_PKEY **key, char *CN, X509_REQ **req) {
 
 	/* Set the DN of the request. */
 	name = X509_REQ_get_subject_name(*req);
-	X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, (const unsigned char*)CN, strlen(CN), -1, 0);
+	X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, (const unsigned char*)CN, (int)CN_size, -1, 0);
 
 	/* Self-sign the request to prove that we posses the key. */
 	if (!X509_REQ_sign(*req, *key, EVP_get_digestbyname(UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME))) {

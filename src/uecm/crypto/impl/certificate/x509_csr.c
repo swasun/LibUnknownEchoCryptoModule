@@ -28,6 +28,7 @@
 #include <openssl/pem.h>
 
 #include <string.h>
+#include <limits.h>
 
 struct uecm_x509_csr {
     X509_REQ *impl;
@@ -41,7 +42,7 @@ uecm_x509_csr *uecm_x509_csr_create(uecm_x509_certificate *certificate, uecm_pri
 
     uecm_safe_alloc(csr, uecm_x509_csr, 1);
 
-    if (!(csr->impl = X509_to_X509_REQ(uecm_x509_certificate_get_impl(certificate), uecm_private_key_get_impl(private_key), digest))) {
+    if ((csr->impl = X509_to_X509_REQ(uecm_x509_certificate_get_impl(certificate), uecm_private_key_get_impl(private_key), digest)) == NULL) {
         ei_stacktrace_push_msg("Failed to convert X509 certificate to X509 csr");
         uecm_safe_free(csr);
         return NULL;
@@ -62,7 +63,7 @@ void uecm_x509_csr_destroy(uecm_x509_csr *csr) {
 bool uecm_x509_csr_print(uecm_x509_csr *csr, FILE *fd) {
     BIO *out_bio;
 
-    if (!(out_bio = BIO_new_fp(fd, BIO_NOCLOSE))) {
+    if ((out_bio = BIO_new_fp(fd, BIO_NOCLOSE)) == NULL) {
         ei_stacktrace_push_msg("Failed to create BIO from specified fd");
         return false;
     }
@@ -80,14 +81,14 @@ bool uecm_x509_csr_print(uecm_x509_csr *csr, FILE *fd) {
 char *uecm_x509_csr_to_string(uecm_x509_csr *csr) {
     BIO *csr_bio;
     char *error_buffer, *buffer;
-    size_t buffer_size;
+    int buffer_size;
 
     csr_bio = NULL;
     error_buffer = NULL;
     buffer = NULL;
     buffer_size = 0;
 
-    if (!(csr_bio = BIO_new(BIO_s_mem()))) {
+    if ((csr_bio = BIO_new(BIO_s_mem())) == NULL) {
         uecm_openssl_error_handling(error_buffer, "BIO_new for csr");
         goto clean_up;
     }
@@ -118,12 +119,22 @@ uecm_x509_csr *uecm_x509_string_to_csr(char *string) {
     uecm_x509_csr *csr;
     BIO *bio;
     char *error_buffer;
+	size_t string_size;
+
+	ei_check_parameter_or_return(string);
+
+	string_size = strlen(string);
+
+	if (string_size > INT_MAX) {
+		ei_stacktrace_push_msg("BIO_new_mem_buf() take a length in int but string_size > INT_MAX");
+		return NULL;
+	}
 
     uecm_safe_alloc(csr, uecm_x509_csr, 1)
     bio = NULL;
     error_buffer = NULL;
 
-    if (!(bio = BIO_new_mem_buf(string, strlen(string)))) {
+    if ((bio = BIO_new_mem_buf(string, (int)string_size)) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "BIO_new_mem_buf");
         uecm_safe_free(csr);
 		goto clean_up;
@@ -146,19 +157,24 @@ uecm_x509_csr *uecm_x509_bytes_to_csr(unsigned char *data, size_t data_size) {
     BIO *bio;
     char *error_buffer;
 
+	if (data_size > INT_MAX) {
+		ei_stacktrace_push_msg("BIO_new_mem_buf() take length in int but data_size > INT_MAX");
+		return NULL;
+	}
+
     uecm_safe_alloc(csr, uecm_x509_csr, 1)
     bio = NULL;
     error_buffer = NULL;
     csr->impl = NULL;
 
-    if (!(bio = BIO_new_mem_buf(data, data_size))) {
+    if ((bio = BIO_new_mem_buf(data, (int)data_size)) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "BIO_new_mem_buf");
         uecm_safe_free(csr);
         csr = NULL;
 		goto clean_up;
 	}
 
-    if (!(csr->impl = PEM_read_bio_X509_REQ(bio, NULL, NULL, NULL))) {
+    if ((csr->impl = PEM_read_bio_X509_REQ(bio, NULL, NULL, NULL)) == NULL) {
         uecm_openssl_error_handling(error_buffer, "PEM_read_bio_X509_REQ");
         uecm_safe_free(csr);
         csr = NULL;

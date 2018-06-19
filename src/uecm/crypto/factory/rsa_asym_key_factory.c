@@ -31,10 +31,11 @@
 #include <openssl/bn.h>
 
 #include <stdio.h>
+#include <limits.h>
 
 static bool uecm_rsa_get_string_from_keypair(RSA *keypair, char **pub_key, char **priv_key, size_t *pub_key_length, size_t *priv_key_length) {
 	bool succeed;
-	size_t priv_key_length_tmp, pub_key_length_tmp;
+	int priv_key_length_tmp, pub_key_length_tmp;
 	BIO *priv, *pub;
 	char *pub_key_tmp, *priv_key_tmp, *error_buffer;
 
@@ -45,12 +46,12 @@ static bool uecm_rsa_get_string_from_keypair(RSA *keypair, char **pub_key, char 
 	priv_key_tmp = NULL;
     error_buffer = NULL;
 
-	if (!(priv = BIO_new(BIO_s_mem()))) {
+	if ((priv = BIO_new(BIO_s_mem())) == NULL) {
         uecm_openssl_error_handling(error_buffer, "BIO_new private key");
         goto clean_up;
     }
 
-    if (!(pub = BIO_new(BIO_s_mem()))) {
+    if ((pub = BIO_new(BIO_s_mem())) == NULL) {
         uecm_openssl_error_handling(error_buffer, "BIO_new public key");
         goto clean_up;
     }
@@ -86,8 +87,8 @@ static bool uecm_rsa_get_string_from_keypair(RSA *keypair, char **pub_key, char 
 
     *priv_key = priv_key_tmp;
     *pub_key = pub_key_tmp;
-    *pub_key_length = pub_key_length_tmp;
-    *priv_key_length = priv_key_length_tmp;
+    *pub_key_length = (size_t)pub_key_length_tmp;
+    *priv_key_length = (size_t)priv_key_length_tmp;
 
 	succeed = true;
 
@@ -104,14 +105,14 @@ static bool uecm_rsa_get_pub_key_from_file(const char *file_name, RSA **pub_key)
     fd = NULL;
     error_buffer = NULL;
 
-    if (!(fd = fopen(file_name, "rb"))) {
+    if ((fd = fopen(file_name, "rb")) == NULL) {
 		ei_stacktrace_push_errno();
 		return false;
 	}
 
     *pub_key = RSA_new();
 
-    if (!(*pub_key = PEM_read_RSA_PUBKEY(fd, pub_key, NULL, NULL))) {
+    if ((*pub_key = PEM_read_RSA_PUBKEY(fd, pub_key, NULL, NULL)) == NULL) {
 		RSA_free(*pub_key);
 		fclose(fd);
         uecm_openssl_error_handling(error_buffer, "PEM_read_RSA_PUBKEY");
@@ -129,14 +130,14 @@ static bool uecm_rsa_get_priv_key_from_file(const char *file_name, RSA **priv_ke
     fd = NULL;
     error_buffer = NULL;
 
-    if (!(fd = fopen(file_name, "rb"))) {
+    if ((fd = fopen(file_name, "rb")) == NULL) {
 		ei_stacktrace_push_errno();
 		return false;
 	}
 
     *priv_key = RSA_new();
 
-    if (!(*priv_key = PEM_read_RSAPrivateKey(fd, priv_key, NULL, NULL))) {
+    if ((*priv_key = PEM_read_RSAPrivateKey(fd, priv_key, NULL, NULL)) == NULL) {
 		RSA_free(*priv_key);
 		fclose(fd);
         uecm_openssl_error_handling(error_buffer, "PEM_read_RSAPrivateKey");
@@ -167,7 +168,7 @@ uecm_asym_key *uecm_rsa_asym_key_create(int bits) {
 	sk = NULL;
 	pk = NULL;
 
-    if (!(uecm_rsa_key_pair = uecm_rsa_keypair_gen(bits))) {
+    if ((uecm_rsa_key_pair = uecm_rsa_keypair_gen(bits)) == NULL) {
 		ei_stacktrace_push_msg("Failed to gen openssl RSA keypair");
 		goto clean_up;
 	}
@@ -177,37 +178,49 @@ uecm_asym_key *uecm_rsa_asym_key_create(int bits) {
 		goto clean_up;
 	}
 
-	if (!(uecm_rsa_pk_bio = BIO_new_mem_buf(pub_key_buf, pub_key_buf_length))) {
+	if (pub_key_buf_length > UINT_MAX) {
+		ei_stacktrace_push_msg("BIO_new_mem_buf() need a length in int, however pub_key_buf_length is > UINT_MAX");
+		goto clean_up;
+	}
+
+	/* It's safe to cast pub_key_buf_length to int as we compare it's value with UINT_MAX */
+	if ((uecm_rsa_pk_bio = BIO_new_mem_buf(pub_key_buf, (int)pub_key_buf_length)) == NULL) {
 		ei_stacktrace_push_msg("Failed to init new mem BIO for pub key buf");
 		goto clean_up;
 	}
 
-	if (!(uecm_rsa_pk = PEM_read_bio_RSAPublicKey(uecm_rsa_pk_bio, NULL, NULL, NULL))) {
+	if ((uecm_rsa_pk = PEM_read_bio_RSAPublicKey(uecm_rsa_pk_bio, NULL, NULL, NULL)) == NULL) {
 		ei_stacktrace_push_msg("Failed to build openssl rsa pk from string");
 		goto clean_up;
 	}
 
-	if (!(pk = uecm_public_key_create(RSA_PUBLIC_KEY, (void *)uecm_rsa_pk, bits))) {
+	if ((pk = uecm_public_key_create(RSA_PUBLIC_KEY, (void *)uecm_rsa_pk, bits)) == NULL) {
 		ei_stacktrace_push_msg("Failed to create new rsa public key");
 		goto clean_up;
 	}
 
-	if (!(uecm_rsa_sk_bio = BIO_new_mem_buf(priv_key_buf, priv_key_buf_length))) {
+	if (priv_key_buf_length > UINT_MAX) {
+		ei_stacktrace_push_msg("BIO_new_mem_buf() need a length in int, however priv_key_buf_length is > UINT_MAX");
+		goto clean_up;
+	}
+
+	/* It's safe to cast priv_key_buf_length to int as we compare it's value with UINT_MAX */
+	if ((uecm_rsa_sk_bio = BIO_new_mem_buf(priv_key_buf, (int)priv_key_buf_length)) == NULL) {
 		ei_stacktrace_push_msg("Failed to init new mem BIO for priv key buf");
 		goto clean_up;
 	}
 
-	if (!(uecm_rsa_sk = PEM_read_bio_RSAPrivateKey(uecm_rsa_sk_bio, NULL, NULL, NULL))) {
+	if ((uecm_rsa_sk = PEM_read_bio_RSAPrivateKey(uecm_rsa_sk_bio, NULL, NULL, NULL)) == NULL) {
 		ei_stacktrace_push_msg("Failed to build openssl rsa sk from string");
 		goto clean_up;
 	}
 
-	if (!(sk = uecm_private_key_create(RSA_PRIVATE_KEY, (void *)uecm_rsa_sk, bits))) {
+	if ((sk = uecm_private_key_create(RSA_PRIVATE_KEY, (void *)uecm_rsa_sk, bits)) == NULL) {
 		ei_stacktrace_push_msg("Failed to create new rsa private key");
 		goto clean_up;
 	}
 
-	if (!(akey = uecm_asym_key_create(pk, sk))) {
+	if ((akey = uecm_asym_key_create(pk, sk)) == NULL) {
 		ei_stacktrace_push_msg("Failed to create asym key");
 		goto clean_up;
 	}
@@ -235,7 +248,7 @@ uecm_public_key *uecm_rsa_public_key_create_pk_from_file(char *file_path) {
 		return NULL;
 	}
 
-	if (!(pk = uecm_public_key_create(RSA_PUBLIC_KEY, (void *)uecm_rsa_pk, RSA_size(uecm_rsa_pk)))) {
+	if ((pk = uecm_public_key_create(RSA_PUBLIC_KEY, (void *)uecm_rsa_pk, RSA_size(uecm_rsa_pk))) == NULL) {
 		ei_stacktrace_push_msg("Failed to build public key from openssl rsa public key");
 		RSA_free(uecm_rsa_pk);
 		return NULL;
@@ -251,12 +264,12 @@ uecm_private_key *uecm_rsa_private_key_create_sk_from_file(char *file_path) {
 	sk = NULL;
 	uecm_rsa_sk = NULL;
 
-	if (!(uecm_rsa_get_priv_key_from_file(file_path, &uecm_rsa_sk))) {
+	if ((uecm_rsa_get_priv_key_from_file(file_path, &uecm_rsa_sk)) == false) {
 		ei_stacktrace_push_msg("Failed to read openssl rsa private key from file");
 		return NULL;
 	}
 
-	if (!(sk = uecm_private_key_create(RSA_PRIVATE_KEY, (void *)uecm_rsa_sk, RSA_size(uecm_rsa_sk)))) {
+	if ((sk = uecm_private_key_create(RSA_PRIVATE_KEY, (void *)uecm_rsa_sk, RSA_size(uecm_rsa_sk))) == NULL) {
 		ei_stacktrace_push_msg("Failed to build private key from openssl rsa private key");
 		RSA_free(uecm_rsa_sk);
 		return NULL;
@@ -270,7 +283,9 @@ uecm_asym_key *uecm_rsa_asym_key_create_from_files(char *pk_file_path, char *sk_
 
 	akey = NULL;
 
-	if (!(akey = uecm_asym_key_create(uecm_rsa_public_key_create_pk_from_file(pk_file_path), uecm_rsa_private_key_create_sk_from_file(sk_file_path)))) {
+	if ((akey = uecm_asym_key_create(uecm_rsa_public_key_create_pk_from_file(pk_file_path),
+		uecm_rsa_private_key_create_sk_from_file(sk_file_path))) == NULL) {
+
 		ei_stacktrace_push_msg("Failed to create asym key");
 		return NULL;
 	}
@@ -294,7 +309,7 @@ uecm_public_key *uecm_rsa_public_key_from_x509_certificate(uecm_x509_certificate
 	rsa = EVP_PKEY_get1_RSA(public_key_impl);
 	EVP_PKEY_free(public_key_impl);
 
-	if (!(public_key = uecm_public_key_create(RSA_PUBLIC_KEY, (void *)rsa, RSA_size(rsa)))) {
+	if ((public_key = uecm_public_key_create(RSA_PUBLIC_KEY, (void *)rsa, RSA_size(rsa))) == NULL) {
 		RSA_free(rsa);
 		ei_stacktrace_push_msg("Failed to build public key from openssl rsa public key");
 		return NULL;
@@ -327,7 +342,7 @@ uecm_private_key *uecm_rsa_private_key_from_key_certificate(const char *file_nam
 
 	rsa = EVP_PKEY_get1_RSA(private_key_impl);
 
-	if (!(private_key = uecm_private_key_create(RSA_PRIVATE_KEY, (void *)rsa, RSA_size(rsa)))) {
+	if ((private_key = uecm_private_key_create(RSA_PRIVATE_KEY, (void *)rsa, RSA_size(rsa))) == NULL) {
 		ei_stacktrace_push_msg("Failed to build RSA private key from key certificate file");
 		goto clean_up;
 	}

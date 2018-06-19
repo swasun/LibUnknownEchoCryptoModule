@@ -51,6 +51,7 @@ uecm_sym_key *uecm_sym_key_create_random() {
 }
 
 uecm_sym_key *uecm_sym_key_create_from_file(char *file_path) {
+	(void)file_path;
 	ei_stacktrace_push_msg("Not implemented");
 	return NULL;
 }

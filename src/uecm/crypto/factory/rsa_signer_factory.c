@@ -34,7 +34,7 @@ uecm_signer *uecm_rsa_signer_create(uecm_public_key *pk, uecm_private_key *sk, c
 		return NULL;
 	}
 
-	if (!(signer = uecm_signer_create(digest_name))) {
+	if ((signer = uecm_signer_create(digest_name)) == NULL) {
 		ei_stacktrace_push_msg("Failed to create signer");
 		return NULL;
 	}

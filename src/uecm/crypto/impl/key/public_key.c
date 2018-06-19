@@ -51,10 +51,10 @@ uecm_public_key *uecm_public_key_create(uecm_public_key_type key_type, void *imp
 
 	pk->bits = bits;
 
-	if (!uecm_public_key_is_valid(pk)) {
+	/*if (!uecm_public_key_is_valid(pk)) {
 		uecm_public_key_destroy(pk);
 		return NULL;
-	}
+	}*/
 
 	return pk;
 }
@@ -99,7 +99,7 @@ int uecm_public_key_size(uecm_public_key *pk) {
 	return -1;
 }
 
-bool uecm_public_key_is_valid(uecm_public_key *pk) {
+/*bool uecm_public_key_is_valid(uecm_public_key *pk) {
 	return true;
 
 	if (pk->type == RSA_PUBLIC_KEY) {
@@ -109,7 +109,7 @@ bool uecm_public_key_is_valid(uecm_public_key *pk) {
 	ei_stacktrace_push_msg("Not implemented key type");
 
 	return false;
-}
+}*/
 
 void *uecm_public_key_get_impl(uecm_public_key *pk) {
 	return pk->impl;
@@ -129,7 +129,7 @@ bool uecm_public_key_print(uecm_public_key *pk, FILE *out_fd) {
 	rsa = NULL;
 
 	if (EVP_PKEY_id(pk->impl) == EVP_PKEY_RSA) {
-	    if (!(rsa = EVP_PKEY_get1_RSA(pk->impl))) {
+	    if ((rsa = EVP_PKEY_get1_RSA(pk->impl)) == NULL) {
 			return false;
 		}
 	    RSA_print_fp(out_fd, rsa, 0);

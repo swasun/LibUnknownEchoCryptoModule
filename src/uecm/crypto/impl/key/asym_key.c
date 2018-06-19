@@ -44,11 +44,11 @@ void uecm_asym_key_destroy_all(uecm_asym_key *akey){
 	}
 }
 
-bool uecm_asym_key_is_valid(uecm_asym_key *akey){
+/*bool uecm_asym_key_is_valid(uecm_asym_key *akey){
 	return akey && akey->pk && akey->sk &&
 		uecm_public_key_is_valid(akey->pk) &&
 		uecm_private_key_is_valid(akey->sk);
-}
+}*/
 
 bool uecm_asym_key_print(uecm_asym_key *akey, FILE *out_fd, char *passphrase) {
 	if (!akey || !akey->pk || !akey->sk) {

@@ -18,11 +18,14 @@
  ******************************************************************************************/
 
 /**
+ * The __pragma(warning(disable:4127)) is used to disable this warning:
+ * https://docs.microsoft.com/fr-fr/cpp/error-messages/compiler-warnings/compiler-warning-level-4-c4127
+ * that append when size is not variable, like 1. So 1 == 0 will trigger this warnings.
+ *
  *  @file      alloc.h
  *  @brief     Macro functions to safely alloc/desalloc variables.
  *  @author    Charly Lamothe
  *  @copyright GNU Public License.
- *  @todo      Fix invalid size comparaison when size is of type size_t
  */
 
 #ifndef UNKNOWNECHOCRYPTOMODULE_ALLOC_H
@@ -35,6 +38,47 @@
 #include <ei/ei.h>
 
 /**
+ * Check if a variable is unsigned
+ *
+ * @source: https://stackoverflow.com/a/9629354
+ * @source: https://stackoverflow.com/a/7317613
+ */
+#if defined(__GNUC__)
+
+#define ISUNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
+
+#else
+
+/**
+ * @todo fix for unsigned char
+ */
+#define ISUNSIGNED(a) (a >= 0 && ~a >= 0)
+
+#endif
+
+#ifdef _WIN32
+
+/**
+ * Disable a warning on win32 platform
+ * You must call DISABLE_WIN32_PRAGMA_WARN_END afterwards
+ *
+ * @source: https://stackoverflow.com/a/13577924
+ */
+#define DISABLE_WIN32_PRAGMA_WARN(nnn) \
+__pragma (warning (push)) \
+__pragma (warning(disable : nnn)) \
+
+#define DISABLE_WIN32_PRAGMA_WARN_END \
+__pragma (warning (pop)) \
+
+#else
+
+#define DISABLE_WIN32_PRAGMA_WARN(nnn)
+#define DISABLE_WIN32_PRAGMA_WARN_END
+
+#endif
+
+/**
  *  @brief Alloc a variable in a safe way.
  *
  *  Set variable to NULL,
@@ -43,22 +87,26 @@
  *  Check if variable is correctly allocated.
  */
 #define uecm_safe_alloc(var, type, size) \
-	if (size <= 0) { \
-		ei_stacktrace_push_msg("Can't allocate data with a negative or null size '%d'", (int)size); \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if ((ISUNSIGNED(size) && size == 0) || (size <= 0)) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
+		ei_stacktrace_push_msg("Can't allocate data with a negative or null size"); \
 		return 0; \
 	} \
 	var = NULL; \
-	var = (type*)malloc(size * sizeof(type)); \
+	var = (type *)malloc(size * sizeof(type)); \
 	memset(var, 0, size * sizeof(type)); \
     uecm_check_alloc(var) \
 
 #define uecm_safe_alloc_ret(var, type, size, ret) \
-	if (size <= 0) { \
-		ei_stacktrace_push_msg("Can't allocate data with a negative or null size '%d'", (int)size); \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if ((ISUNSIGNED(size) && size == 0) || (size <= 0)) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
+		ei_stacktrace_push_msg("Can't allocate data with a negative or null size"); \
 		ret = 0; \
 	} else { \
 		var = NULL; \
-		var = (type*)malloc(size * sizeof(type)); \
+		var = (type *)malloc(size * sizeof(type)); \
 		memset(var, 0, size * sizeof(type)); \
 	    if (errno == ENOMEM) { \
 	        ei_stacktrace_push_errno() \
@@ -80,12 +128,14 @@
  *  Check if variable is correctly allocated. If not, go to specified label
  */
 #define uecm_safe_alloc_or_goto(var, type, size, label) \
-	if (size <= 0) { \
-		ei_stacktrace_push_msg("Can't allocate data with a negative or null size '%d'", (int)size); \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if ((ISUNSIGNED(size) && size == 0) || (size <= 0)) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
+		ei_stacktrace_push_msg("Can't allocate data with a negative or null size"); \
 		goto label; \
 	} \
 	var = NULL; \
-	var = (type*)malloc(size * sizeof(type)); \
+	var = (type *)malloc(size * sizeof(type)); \
 	memset(var, 0, size * sizeof(type)); \
     uecm_check_alloc_or_goto(var, label) \
 
@@ -98,15 +148,19 @@
  *  Check if variable is correctly allocated.
  */
 #define uecm_safe_realloc(var, type, old_size, more_size) \
-	if (old_size < 0) { \
-		ei_stacktrace_push_msg("Can't allocate data with a negative old_size '%d'", (int)old_size); \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if (!ISUNSIGNED(old_size) && old_size < 0) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
+		ei_stacktrace_push_msg("Can't allocate data with a negative old_size"); \
 		return 0; \
 	} \
-	if (old_size == 0 && more_size <= 0) { \
-		ei_stacktrace_push_msg("Can't allocate data with an old_size equal to 0 and a null or negative more_size '%d'", (int)more_size); \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if (old_size == 0 && ((ISUNSIGNED(more_size) && more_size == 0) || (more_size <= 0))) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
+		ei_stacktrace_push_msg("Can't allocate data with an old_size equal to 0 and a null or negative more_size"); \
 	    return 0; \
 	} \
-	var = (type*)realloc(var, (old_size + more_size + 1) * sizeof(type)); \
+	var = (type *)realloc(var, (old_size + more_size + 1) * sizeof(type)); \
 	memset(var + old_size, 0, (more_size + 1) * sizeof(type)); \
     uecm_check_alloc(var) \
 
@@ -119,15 +173,19 @@
  *  Check if variable is correctly allocated. If not, go to specified label
  */
 #define uecm_safe_realloc_or_goto(var, type, old_size, more_size, label) \
-	if (old_size < 0) { \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if (!ISUNSIGNED(old_size) && old_size < 0) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with a negative old_size '%d'", (int)old_size); \
 	    goto label; \
 	} \
-	if (old_size == 0 && more_size <= 0) { \
+DISABLE_WIN32_PRAGMA_WARN(4127) \
+	if (old_size == 0 && ((ISUNSIGNED(more_size) && more_size == 0) || (more_size <= 0))) { \
+DISABLE_WIN32_PRAGMA_WARN_END \
 		ei_stacktrace_push_msg("Can't allocate data with an old_size equal to 0 and a null or negative more_size '%d'", (int)more_size); \
 	    goto label; \
 	} \
-	var = (type*)realloc(var, (old_size + more_size + 1) * sizeof(type)); \
+	var = (type *)realloc(var, (old_size + more_size + 1) * sizeof(type)); \
 	memset(var + old_size, 0, (more_size + 1) * sizeof(type)); \
     uecm_check_alloc_or_goto(var, label) \
 
@@ -172,7 +230,7 @@
  */
 #define uecm_safe_free(var) \
 	if (var) { \
-		free((void*)var); \
+		free((void *)var); \
 		var = NULL; \
 	} \
 

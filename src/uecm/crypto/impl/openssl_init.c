@@ -43,6 +43,9 @@
 
 /* OpenSSL callback to utilize static locks */
 void openssl_locking_function_callback(int mode, int n, const char *file, int line) {
+	(void)file;
+	(void)line;
+
     if (mode & CRYPTO_LOCK) {
     	#if defined(_WIN32) || defined(_WIN64)
         	EnterCriticalSection(&mutex_buf[n]);

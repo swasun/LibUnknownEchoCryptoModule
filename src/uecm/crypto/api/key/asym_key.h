@@ -45,7 +45,7 @@ void uecm_asym_key_destroy(uecm_asym_key *akey);
 
 void uecm_asym_key_destroy_all(uecm_asym_key *akey);
 
-bool uecm_asym_key_is_valid(uecm_asym_key *akey);
+//bool uecm_asym_key_is_valid(uecm_asym_key *akey);
 
 bool uecm_asym_key_print(uecm_asym_key *akey, FILE *out_fd, char *passphrase);
 

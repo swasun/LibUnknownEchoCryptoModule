@@ -56,17 +56,17 @@ bool uecm_x509_certificate_generate(uecm_x509_certificate_parameters *parameters
 	name = NULL;
 	error_buffer = NULL;
 
-	if (!(x = X509_new())) {
+	if ((x = X509_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Failed to create new X509 implementation");
 		return false;
 	}
 
-    if (!(rsa = uecm_rsa_keypair_gen(uecm_x509_certificate_parameters_get_bits(parameters)))) {
+    if ((rsa = uecm_rsa_keypair_gen(uecm_x509_certificate_parameters_get_bits(parameters))) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Failed to create new RSA keypair");
 		goto clean_up_failed;
 	}
 
-	if (!(*private_key = uecm_private_key_create(RSA_PRIVATE_KEY, rsa, uecm_x509_certificate_parameters_get_bits(parameters)))) {
+	if ((*private_key = uecm_private_key_create(RSA_PRIVATE_KEY, rsa, uecm_x509_certificate_parameters_get_bits(parameters))) == NULL) {
 		ei_stacktrace_push_msg("Failed to create private key from generated RSA");
 		RSA_free(rsa);
 		goto clean_up_failed;
@@ -76,7 +76,7 @@ bool uecm_x509_certificate_generate(uecm_x509_certificate_parameters *parameters
 
     pk = uecm_private_key_get_impl(*private_key);
 
-    if (!(*certificate = uecm_x509_certificate_create_empty())) {
+    if ((*certificate = uecm_x509_certificate_create_empty()) == NULL) {
 		ei_stacktrace_push_msg("Failed to create new X509 certificate");
 		goto clean_up_failed;
 	}
@@ -164,12 +164,12 @@ bool uecm_x509_certificate_print_pair(uecm_x509_certificate *certificate, uecm_p
 	private_key_fd = NULL;
 	certificate_fd = NULL;
 
-	if (!(certificate_fd = fopen(certificate_file_name, "wb"))) {
+	if ((certificate_fd = fopen(certificate_file_name, "wb")) == NULL) {
 		ei_stacktrace_push_errno();
 		goto clean_up;
 	}
 
-    if (!(private_key_fd = fopen(private_key_file_name, "wb"))) {
+    if ((private_key_fd = fopen(private_key_file_name, "wb")) == NULL) {
 		ei_stacktrace_push_errno();
 		goto clean_up;
 	}
@@ -204,7 +204,7 @@ static bool add_ext(X509 *cert, int nid, char *value) {
 
 	X509V3_set_ctx(&ctx, cert, cert, NULL, NULL, 0);
 
-	if (!(ex = X509V3_EXT_conf_nid(NULL, &ctx, nid, value))) {
+	if ((ex = X509V3_EXT_conf_nid(NULL, &ctx, nid, value)) == NULL) {
 		ei_stacktrace_push_msg("Ext returned is null")
 		return false;
 	}

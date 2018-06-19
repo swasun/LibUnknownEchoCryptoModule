@@ -27,17 +27,19 @@ int main() {
 
 	ei_init();
 
+	our_crypto_metadata = NULL;
+	read_crypto_metadata = NULL;
+
 	if (!uecm_init()) {
 		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
 		goto clean_up;
 	}
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
 
-    our_crypto_metadata = NULL;
     read_crypto_metadata = uecm_crypto_metadata_create_empty();
 
     ei_logger_info("Generating crypto metadata for point A...");
-    if (!(our_crypto_metadata = uecm_crypto_metadata_create_default())) {
+    if ((our_crypto_metadata = uecm_crypto_metadata_create_default()) == NULL) {
         ei_stacktrace_push_msg("Failed to generate default crypto metadata for point A");
         goto clean_up;
     }

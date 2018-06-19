@@ -21,10 +21,13 @@
 #include <uecm/crypto/impl/errorHandling/openssl_error_handling.h>
 #include <uecm/time/processor_timestamp.h>
 #include <uecm/alloc.h>
+
 #include <ei/ei.h>
 
 #include <openssl/err.h>
 #include <openssl/rand.h>
+
+#include <limits.h>
 
 #if defined(__unix__) || defined(UNIX)
     #include <sys/types.h>
@@ -81,7 +84,7 @@ bool uecm_crypto_random_seed_prng() {
      * @todo test
      */
     while (!result && attempts < max_attempts) {
-        if (!(result = RAND_status())) {
+        if ((result = RAND_status()) == false) {
             #if defined(__unix__) || defined(UNIX)
                 fd = open("/dev/urandom", S_IRUSR);
                 if (fd < 0) {
@@ -121,12 +124,17 @@ bool uecm_crypto_random_bytes(unsigned char *buffer, size_t buffer_length) {
     int attempts;
     char *error_buffer;
 
+	if (buffer_length > UINT_MAX) {
+		ei_stacktrace_push_msg("RAND_bytes() need a length in int, however buffer_length is > UINT_MAX");
+		return false;
+	}
+
     attempts = 0;
     error_buffer = NULL;
 
     uecm_crypto_random_seed_prng();
 
-    while (RAND_bytes(buffer, buffer_length) != 1 && ++attempts != 5);
+    while (RAND_bytes(buffer, (int)buffer_length) != 1 && ++attempts != 5);
 
     if (attempts < 5) {
         return true;

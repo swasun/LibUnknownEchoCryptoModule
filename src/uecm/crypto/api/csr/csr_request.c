@@ -39,13 +39,13 @@ static char *generate_csr_string(uecm_x509_certificate *certificate, uecm_privat
     csr_string = NULL;
     csr = NULL;
 
-    if (!(csr = uecm_x509_csr_create(certificate, private_key))) {
+    if ((csr = uecm_x509_csr_create(certificate, private_key)) == NULL) {
         ei_stacktrace_push_msg("Failed to create x509 CRS from certificate and private key");
         return NULL;
     }
 
     ei_logger_info("Convert x509 CRS to string...");
-    if (!(csr_string = uecm_x509_csr_to_string(csr))) {
+    if ((csr_string = uecm_x509_csr_to_string(csr)) == NULL) {
         ei_stacktrace_push_msg("Failed to convert x509 CRS to string");
         uecm_x509_csr_destroy(csr);
         return NULL;
@@ -77,7 +77,7 @@ unsigned char *uecm_csr_build_client_request(uecm_x509_certificate *certificate,
     stream = uecm_byte_stream_create();
     cipher_data = NULL;
 
-    if (!(csr_string = generate_csr_string(certificate, private_key))) {
+    if ((csr_string = generate_csr_string(certificate, private_key)) == NULL) {
 		ei_stacktrace_push_msg("Failed to generate CSR string from certificate and private key");
 		goto clean_up;
 	}
@@ -143,7 +143,7 @@ uecm_x509_certificate *uecm_csr_process_server_response(unsigned char *server_re
 		goto clean_up;
 	}
 
-    if (!(signed_certificate = uecm_x509_certificate_load_from_bytes(signed_certificate_buffer, signed_certificate_buffer_size))) {
+    if ((signed_certificate = uecm_x509_certificate_load_from_bytes(signed_certificate_buffer, signed_certificate_buffer_size)) == NULL) {
         ei_stacktrace_push_msg("Failed to convert bytes to x509 certificate");
     }
 
@@ -234,22 +234,22 @@ unsigned char *uecm_csr_build_server_response(uecm_private_key *csr_private_key,
         goto clean_up;
     }
 
-    if (!(key = uecm_sym_key_create(key_data, key_size))) {
+    if ((key = uecm_sym_key_create(key_data, key_size)) == NULL) {
         ei_stacktrace_push_msg("Failed to create sym key");
         goto clean_up;
     }
 
-    if (!(csr = uecm_x509_bytes_to_csr(decipher_client_request, decipher_client_request_size))) {
+    if ((csr = uecm_x509_bytes_to_csr(decipher_client_request, decipher_client_request_size)) == NULL) {
         ei_stacktrace_push_msg("Failed to convert decipher bytes to x509 CSR");
         goto clean_up;
     }
 
-    if (!(*signed_certificate = uecm_x509_certificate_sign_from_csr(csr, ca_certificate, ca_private_key))) {
+    if ((*signed_certificate = uecm_x509_certificate_sign_from_csr(csr, ca_certificate, ca_private_key)) == NULL) {
         ei_stacktrace_push_msg("Failed to gen certificate from client certificate");
         goto clean_up;
     }
 
-    if (!(string_pem_certificate = uecm_x509_certificate_to_pem_string(*signed_certificate, &string_pem_certificate_size))) {
+    if ((string_pem_certificate = uecm_x509_certificate_to_pem_string(*signed_certificate, &string_pem_certificate_size)) == NULL) {
         ei_stacktrace_push_msg("Failed to convert certificate to PEM string");
         goto clean_up;
     }

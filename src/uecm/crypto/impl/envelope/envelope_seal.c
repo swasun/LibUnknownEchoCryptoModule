@@ -34,12 +34,12 @@ bool envelope_seal_buffer(EVP_PKEY *pub_key, unsigned char *plaintext, int plain
 	ctx = NULL;
 	error_buffer = NULL;
 
-	if (!(cipher = EVP_get_cipherbyname(cipher_name))) {
+	if ((cipher = EVP_get_cipherbyname(cipher_name)) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Invalid cipher name");
 		goto clean_up;
 	}
 
-	if (!(ctx = EVP_CIPHER_CTX_new())) {
+	if ((ctx = EVP_CIPHER_CTX_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Failed to create new cipher");
         goto clean_up;
     }

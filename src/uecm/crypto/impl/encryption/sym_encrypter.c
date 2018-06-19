@@ -20,10 +20,13 @@
 #include <uecm/crypto/api/encryption/sym_encrypter.h>
 #include <uecm/crypto/impl/errorHandling/openssl_error_handling.h>
 #include <uecm/alloc.h>
-#include <ei/ei.h>
 #include <uecm/string/string_utility.h>
 
+#include <ei/ei.h>
+
 #include <openssl/evp.h>
+
+#include <limits.h>
 
 struct uecm_sym_encrypter {
 	uecm_sym_key *key;
@@ -36,7 +39,7 @@ uecm_sym_encrypter *uecm_sym_encrypter_create(const char *cipher_name) {
 
 	uecm_safe_alloc(encrypter, uecm_sym_encrypter, 1);
 	encrypter->key = NULL;
-	if (!(encrypter->cipher = EVP_get_cipherbyname(cipher_name))) {
+	if ((encrypter->cipher = EVP_get_cipherbyname(cipher_name)) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "Invalid cipher name");
 		uecm_safe_free(encrypter);
 		return NULL;
@@ -93,7 +96,12 @@ bool uecm_sym_encrypter_encrypt(uecm_sym_encrypter *encrypter, unsigned char *pl
 	ei_check_parameter_or_return(iv);
 	ei_check_parameter_or_return(plaintext_size);
 
-	if (!(ctx = EVP_CIPHER_CTX_new())) {
+	if (plaintext_size > INT_MAX) {
+		ei_stacktrace_push_msg("EVP_EncryptUpdate() need a length in int, however plaintext_size > INT_MAX");
+		return false;
+	}
+
+	if ((ctx = EVP_CIPHER_CTX_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "EVP_CIPHER_CTX_new");
 		return false;
 	}
@@ -106,7 +114,8 @@ bool uecm_sym_encrypter_encrypt(uecm_sym_encrypter *encrypter, unsigned char *pl
 
 	uecm_safe_alloc(*ciphertext, unsigned char, plaintext_size + uecm_sym_encrypter_get_iv_size(encrypter));
 
-	if (EVP_EncryptUpdate(ctx, *ciphertext, &len, plaintext, plaintext_size) != 1) {
+	/* It's safe to cast plaintext_size to int as we compare it with UINT_MAX */
+	if (EVP_EncryptUpdate(ctx, *ciphertext, &len, plaintext, (int)plaintext_size) != 1) {
 		EVP_CIPHER_CTX_free(ctx);
 		uecm_openssl_error_handling(error_buffer, "EVP_EncryptUpdate");
 		return false;
@@ -134,9 +143,14 @@ bool uecm_sym_encrypter_decrypt(uecm_sym_encrypter *encrypter, unsigned char *ci
 	int len, rlen;
 	char *error_buffer;
 
+	if (ciphertext_size > INT_MAX) {
+		ei_stacktrace_push_msg("EVP_DecryptUpdate() need a length in int, however ciphertext_size > INT_MAX");
+		return false;
+	}
+
 	error_buffer = NULL;
 
-	if (!(ctx = EVP_CIPHER_CTX_new())) {
+	if ((ctx = EVP_CIPHER_CTX_new()) == NULL) {
 		uecm_openssl_error_handling(error_buffer, "EVP_CIPHER_CTX_new");
 		return false;
 	}
@@ -149,7 +163,8 @@ bool uecm_sym_encrypter_decrypt(uecm_sym_encrypter *encrypter, unsigned char *ci
 
 	uecm_safe_alloc(*plaintext, unsigned char, ciphertext_size + uecm_sym_encrypter_get_iv_size(encrypter));
 
-	if (EVP_DecryptUpdate(ctx, *plaintext, &len, ciphertext, ciphertext_size) != 1) {
+	/* It's safe to cast ciphertext_size to int as we compare it with INT_MAX */
+	if (EVP_DecryptUpdate(ctx, *plaintext, &len, ciphertext, (int)ciphertext_size) != 1) {
 		EVP_CIPHER_CTX_free(ctx);
 		uecm_openssl_error_handling(error_buffer, "EVP_DecryptUpdate");
 		return false;

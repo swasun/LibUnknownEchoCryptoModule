@@ -56,7 +56,7 @@ bool uecm_cipher_plain_data(unsigned char *plain_data, size_t plain_data_size,
     signer = NULL;
     compressed = NULL;
 
-    if (!(compressed = uecm_compress_buf(plain_data, plain_data_size, &compressed_size))) {
+    if ((compressed = uecm_compress_buf(plain_data, plain_data_size, &compressed_size)) == NULL) {
 		ei_stacktrace_push_msg("Failed to compress ReceiverHeader content");
 		goto clean_up;
 	}
@@ -70,7 +70,7 @@ bool uecm_cipher_plain_data(unsigned char *plain_data, size_t plain_data_size,
     }
 
     if (private_key) {
-        if (!(signer = uecm_rsa_signer_create(public_key, private_key, digest_name))) {
+        if ((signer = uecm_rsa_signer_create(public_key, private_key, digest_name)) == NULL) {
             ei_stacktrace_push_msg("Failed to create rsa uecm_signer with key pair");
             goto clean_up;
         }
@@ -171,13 +171,13 @@ bool uecm_decipher_cipher_data(unsigned char *cipher_data,
 
     *plain_data_size = plain_data_size_read;
 
-    if (!(*plain_data = uecm_decompress_buf(compressed, (size_t)compressed_size, plain_data_size_read))) {
+    if ((*plain_data = uecm_decompress_buf(compressed, (size_t)compressed_size, plain_data_size_read)) == NULL) {
 		ei_stacktrace_push_msg("Failed to decompress ServerHeader content");
 		goto clean_up;
 	}
 
     if (verify_signature) {
-        if (!(signer = uecm_rsa_signer_create(public_key, private_key, digest_name))) {
+        if ((signer = uecm_rsa_signer_create(public_key, private_key, digest_name)) == NULL) {
             ei_stacktrace_push_msg("Failed to create signer to verify signature");
             goto clean_up;
         }

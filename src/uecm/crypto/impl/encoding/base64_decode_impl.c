@@ -24,7 +24,7 @@
 static const unsigned char uecm_base64_table[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-void *_memset(void *s, int c, size_t n) {
+/*void *_memset(void *s, int c, size_t n) {
     char *p = s;
 
     while (n--) {
@@ -32,7 +32,7 @@ void *_memset(void *s, int c, size_t n) {
     }
 
     return s;
-}
+}*/
 
 /**
  * uecm_base64_decode - Base64 decode
@@ -47,7 +47,8 @@ unsigned char *uecm_base64_decode_impl(const unsigned char *src, size_t len, siz
     size_t i, count, olen;
     int pad = 0;
 
-    _memset(dtable, 0x80, 256);
+    //_memset(dtable, 0x80, 256);
+	memset(dtable, 0x80, 256);
     for (i = 0; i < sizeof(uecm_base64_table) - 1; i++) {
         dtable[uecm_base64_table[i]] = (unsigned char) i;
     }

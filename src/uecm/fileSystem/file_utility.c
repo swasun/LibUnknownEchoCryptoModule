@@ -57,8 +57,8 @@ bool uecm_is_file_exists(const char *file_name) {
     return false;
 }
 
-size_t uecm_get_file_size(FILE *fd) {
-    size_t file_size;
+ssize_t uecm_get_file_size(FILE *fd) {
+	ssize_t file_size;
 
     file_size = -1;
 
@@ -83,7 +83,7 @@ char *uecm_read_file(const char *file_name) {
 
     ei_check_parameter_or_return(file_name);
 
-    if (!(fd = fopen(file_name, "r"))) {
+    if ((fd = fopen(file_name, "r")) == NULL) {
         ei_stacktrace_push_errno();
         return NULL;
     }
@@ -115,7 +115,7 @@ bool uecm_write_file(const char *file_name, char *data) {
     ei_check_parameter_or_return(file_name);
     ei_check_parameter_or_return(data);
 
-    if (!(fd = fopen(file_name, "w"))) {
+    if ((fd = fopen(file_name, "w")) == NULL) {
         ei_stacktrace_push_errno();
         return false;
     }
@@ -142,7 +142,7 @@ unsigned char *uecm_read_binary_file(const char *file_name, size_t *size) {
 
     ei_check_parameter_or_return(file_name);
 
-    if (!(fd = fopen(file_name, "rb"))) {
+    if ((fd = fopen(file_name, "rb")) == NULL) {
         ei_stacktrace_push_errno();
         return NULL;
     }
@@ -176,7 +176,7 @@ bool uecm_write_binary_file(const char *file_name, unsigned char *data, size_t s
     ei_check_parameter_or_return(file_name);
     ei_check_parameter_or_return(data);
 
-    if (!(fd = fopen(file_name, "wb"))) {
+    if ((fd = fopen(file_name, "wb")) == NULL) {
         ei_stacktrace_push_errno();
         return false;
     }

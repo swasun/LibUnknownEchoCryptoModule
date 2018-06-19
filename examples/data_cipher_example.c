@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 		goto clean_up;
 	}
 
-    if (!(plain_data = uecm_bytes_create_from_string(argv[1]))) {
+    if ((plain_data = uecm_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }

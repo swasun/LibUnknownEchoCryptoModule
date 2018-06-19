@@ -81,7 +81,7 @@ bool uecm_string_builder_append_variadic(uecm_string_builder *s, const char *for
     vsnprintf(buffer, 8192, format, args);
     va_end(args);
 
-    if (!(result = uecm_string_builder_append(s, buffer, strlen(buffer)))) {
+    if ((result = uecm_string_builder_append(s, buffer, strlen(buffer))) == false) {
         ei_stacktrace_push_msg("Failed to append concatenated args");
     }
 
@@ -122,7 +122,8 @@ char *uecm_string_builder_get_data(uecm_string_builder *s) {
 
 size_t uecm_string_builder_get_position(uecm_string_builder *s) {
     if (!s) {
-        return -1;
+		ei_stacktrace_push_msg("Specified string builder ptr is null");
+        return 0;
     }
 
     return s->position;

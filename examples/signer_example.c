@@ -41,8 +41,9 @@ int main(int argc, char **argv) {
     uecm_asym_key *akey;
 
     exit_code = EXIT_FAILURE;
+	signature = NULL;
+	message = NULL;
     s = NULL;
-    signature = NULL;
     akey = NULL;
 
     if (argc == 1) {
@@ -60,7 +61,7 @@ int main(int argc, char **argv) {
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
-    if (!(message = uecm_bytes_create_from_string(argv[1]))) {
+    if ((message = uecm_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
     akey = uecm_rsa_asym_key_create(2048);
 
     ei_logger_info("Creating rsa uecm_signer with random asym key of 2048 bits...");
-    if (!(s = uecm_rsa_signer_create_default_from_pair(akey))) {
+    if ((s = uecm_rsa_signer_create_default_from_pair(akey)) == NULL) {
         ei_stacktrace_push_msg("Failed to create rsa uecm_signer with random asym key")
         goto clean_up;
     }
