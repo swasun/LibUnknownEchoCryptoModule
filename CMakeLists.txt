@@ -73,8 +73,8 @@ else ()
 	# Unix plateform
 	if (UNIX)
 		add_compile_options("-std=gnu99" "-pthread" "-ldl")
-		if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug") # Not debug
-			if(CMAKE_COMPILER_IS_GNUCXX) # GNU compiler
+		if (CMAKE_BUILD_TYPE STREQUAL "Release") # Release build mode
+			if (CMAKE_COMPILER_IS_GNUCC) # GNU compiler
 				add_compile_options("-O2") # O2 optimization
 				set(CMAKE_EXE_LINKER_FLAGS "-s") # Strip binary (only in release mode as it prevent debugging)
 
@@ -88,7 +88,7 @@ else ()
 				### Disable lazy binding
 				## -Wl,-z,relro
 				### Read-only segments after relocation
-				add_compile_options("-fstack-protector-strong -D_FORTIFY_SOURCE=2" "-Wl,-z,now" "-Wl,-z,relro")
+				add_compile_options("-fstack-protector-strong" "-D_FORTIFY_SOURCE=2" "-Wl,-z,now" "-Wl,-z,relro")
 			endif ()
 		else () # Debug mode
 			add_compile_options("-g") # Add debug symbols
