@@ -46,4 +46,11 @@ bool uecm_decipher_cipher_data(unsigned char *cipher_data,
     size_t *plain_data_size, const char *cipher_name,
     const char *digest_name);
 
+bool uecm_cipher_plain_data_default(unsigned char *plain_data, size_t plain_data_size,
+	uecm_public_key *public_key, unsigned char **cipher_data, size_t *cipher_data_size);
+
+bool uecm_decipher_cipher_data_default(unsigned char *cipher_data,
+	size_t cipher_data_size, uecm_private_key *private_key,
+	unsigned char **plain_data, size_t *plain_data_size);
+
 #endif

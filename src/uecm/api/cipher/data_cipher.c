@@ -32,6 +32,7 @@
 #include <ueum/byte/byte_reader.h>
 #include <ueum/byte/byte_utility.h>
 #include <ueum/alloc.h>
+#include <uecm/defines.h>
 #include <ei/ei.h>
 
 bool uecm_cipher_plain_data(unsigned char *plain_data, size_t plain_data_size,
@@ -200,4 +201,46 @@ clean_up:
     ueum_safe_free(signature);
     uecm_signer_destroy(signer);
     return result;
+}
+
+bool uecm_cipher_plain_data_default(unsigned char *plain_data, size_t plain_data_size,
+	uecm_public_key *public_key, unsigned char **cipher_data, size_t *cipher_data_size) {
+
+	unsigned char *cipher_data_temp;
+	size_t cipher_data_size_temp;
+
+	if (!uecm_cipher_plain_data(plain_data, plain_data_size, public_key, NULL, &cipher_data_temp,
+		&cipher_data_size_temp, UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) {
+
+		ei_stacktrace_push_msg("Failed to cipher plain data with default parameters: %s and %s",
+			UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME);
+		return false;
+	}
+
+	*cipher_data = cipher_data_temp;
+	*cipher_data_size = cipher_data_size_temp;
+
+	return true;
+}
+
+bool uecm_decipher_cipher_data_default(unsigned char *cipher_data,
+	size_t cipher_data_size, uecm_private_key *private_key,
+	unsigned char **plain_data, size_t *plain_data_size) {
+
+	unsigned char *plain_data_temp;
+	size_t plain_data_size_temp;
+
+	if (!uecm_decipher_cipher_data(cipher_data, cipher_data_size, private_key,
+		NULL, &plain_data_temp, &plain_data_size_temp, UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME,
+		UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) {
+
+		ei_stacktrace_push_msg("Failed to decipher cipher data with default parameters: %s and %s",
+			UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME);
+		return false;
+	}
+
+	*plain_data = plain_data_temp;
+	*plain_data_size = plain_data_size_temp;
+
+	return true;
 }
