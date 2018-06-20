@@ -18,10 +18,10 @@
  ******************************************************************************************/
 
 #include <uecm/init.h>
-#include <uecm/bool.h>
-#include <uecm/alloc.h>
+#include <ueum/bool.h>
+#include <ueum/alloc.h>
 #include <ei/ei.h>
-#include <uecm/crypto/api/keystore/pkcs12_keystore.h>
+#include <uecm/api/keystore/pkcs12_keystore.h>
 
 #include <stdio.h>
 

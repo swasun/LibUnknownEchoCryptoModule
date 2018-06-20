@@ -18,11 +18,11 @@
  ******************************************************************************************/
 
 #include <uecm/init.h>
-#include <uecm/crypto/api/hash/hasher.h>
-#include <uecm/byte/byte_utility.h>
-#include <uecm/byte/hex_utility.h>
+#include <uecm/api/hash/hasher.h>
+#include <ueum/byte/byte_utility.h>
+#include <ueum/byte/hex_utility.h>
 #include <ei/ei.h>
-#include <uecm/alloc.h>
+#include <ueum/alloc.h>
 
 #include <stddef.h>
 #include <string.h>
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
-    if ((message = uecm_bytes_create_from_string(argv[1])) == NULL) {
+    if ((message = ueum_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
         goto clean_up;
     }
 
-    hex_digest = uecm_bytes_to_hex(digest, digest_length);
+    hex_digest = ueum_bytes_to_hex(digest, digest_length);
     ei_logger_info("Message digest of input '%s' is following : %s", argv[1], hex_digest);
 
     exit_code = EXIT_SUCCESS;
@@ -101,10 +101,10 @@ clean_up:
         ei_logger_error("An error occurred with the following stacktrace :");
         ei_stacktrace_print_all();
     }
-    uecm_safe_free(message)
-    uecm_safe_free(digest)
+    ueum_safe_free(message)
+    ueum_safe_free(digest)
     uecm_hasher_destroy(h);
-    uecm_safe_free(hex_digest)
+    ueum_safe_free(hex_digest)
     uecm_uninit();
 	ei_uninit();
     return exit_code;

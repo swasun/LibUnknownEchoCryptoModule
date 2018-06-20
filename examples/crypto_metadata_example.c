@@ -19,8 +19,8 @@
 
 #include <uecm/init.h>
 #include <ei/ei.h>
-#include <uecm/crypto/api/crypto_metadata.h>
-#include <uecm/crypto/factory/crypto_metadata_factory.h>
+#include <uecm/api/crypto_metadata.h>
+#include <uecm/factory/crypto_metadata_factory.h>
 
 int main() {
     uecm_crypto_metadata *our_crypto_metadata, *read_crypto_metadata;

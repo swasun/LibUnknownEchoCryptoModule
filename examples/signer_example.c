@@ -18,12 +18,12 @@
  ******************************************************************************************/
 
 #include <uecm/init.h>
-#include <uecm/crypto/api/signature/signer.h>
-#include <uecm/crypto/factory/rsa_signer_factory.h>
-#include <uecm/crypto/factory/rsa_asym_key_factory.h>
+#include <uecm/api/signature/signer.h>
+#include <uecm/factory/rsa_signer_factory.h>
+#include <uecm/factory/rsa_asym_key_factory.h>
 #include <ei/ei.h>
-#include <uecm/byte/byte_utility.h>
-#include <uecm/alloc.h>
+#include <ueum/byte/byte_utility.h>
+#include <ueum/alloc.h>
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
-    if ((message = uecm_bytes_create_from_string(argv[1])) == NULL) {
+    if ((message = ueum_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -101,8 +101,8 @@ clean_up:
         ei_logger_error("An error occurred with the following stacktrace :");
         ei_stacktrace_print_all();
     }
-    uecm_safe_free(message);
-    uecm_safe_free(signature);
+    ueum_safe_free(message);
+    ueum_safe_free(signature);
     uecm_signer_destroy(s);
     uecm_asym_key_destroy_all(akey);
     uecm_uninit();

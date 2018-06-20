@@ -18,8 +18,8 @@
  ******************************************************************************************/
 
 #include <uecm/init.h>
-#include <uecm/crypto/api/crypto_init.h>
-#include <uecm/bool.h>
+#include <uecm/api/crypto_init.h>
+#include <ueum/bool.h>
 
 static bool crypto_initialized = false;
 

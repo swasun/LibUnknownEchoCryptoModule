@@ -19,10 +19,10 @@
 
 #include <uecm/init.h>
 #include <ei/ei.h>
-#include <uecm/crypto/api/certificate/x509_certificate_generation.h>
-#include <uecm/crypto/api/certificate/x509_certificate.h>
-#include <uecm/crypto/api/key/private_key.h>
-#include <uecm/crypto/factory/x509_certificate_factory.h>
+#include <uecm/api/certificate/x509_certificate_generation.h>
+#include <uecm/api/certificate/x509_certificate.h>
+#include <uecm/api/key/private_key.h>
+#include <uecm/factory/x509_certificate_factory.h>
 
 #include <stdio.h>
 

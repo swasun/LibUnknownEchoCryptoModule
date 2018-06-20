@@ -18,16 +18,16 @@
  ******************************************************************************************/
 
 #include <uecm/init.h>
-#include <uecm/bool.h>
-#include <uecm/crypto/api/key/public_key.h>
-#include <uecm/crypto/api/key/private_key.h>
-#include <uecm/crypto/api/key/asym_key.h>
-#include <uecm/crypto/api/certificate/x509_certificate.h>
-#include <uecm/crypto/api/cipher/data_cipher.h>
-#include <uecm/crypto/factory/rsa_asym_key_factory.h>
-#include <uecm/alloc.h>
+#include <ueum/bool.h>
+#include <uecm/api/key/public_key.h>
+#include <uecm/api/key/private_key.h>
+#include <uecm/api/key/asym_key.h>
+#include <uecm/api/certificate/x509_certificate.h>
+#include <uecm/api/cipher/data_cipher.h>
+#include <uecm/factory/rsa_asym_key_factory.h>
+#include <ueum/alloc.h>
 #include <ei/ei.h>
-#include <uecm/byte/byte_utility.h>
+#include <ueum/byte/byte_utility.h>
 
 #include <stddef.h>
 #include <string.h>
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 		goto clean_up;
 	}
 
-    if ((plain_data = uecm_bytes_create_from_string(argv[1])) == NULL) {
+    if ((plain_data = ueum_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -103,9 +103,9 @@ clean_up:
     uecm_public_key_destroy(public_key);
     uecm_private_key_destroy(private_key);
     uecm_asym_key_destroy_all(asym_key);
-    uecm_safe_free(plain_data);
-    uecm_safe_free(cipher_data);
-    uecm_safe_free(decipher_data);
+    ueum_safe_free(plain_data);
+    ueum_safe_free(cipher_data);
+    ueum_safe_free(decipher_data);
     uecm_x509_certificate_destroy(certificate);
     if (ei_stacktrace_is_filled()) {
         ei_logger_error("Error(s) occurred with the following stacktrace(s) :");

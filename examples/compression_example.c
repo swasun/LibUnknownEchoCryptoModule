@@ -18,9 +18,9 @@
  ******************************************************************************************/
 
 #include <uecm/init.h>
-#include <uecm/crypto/api/compression/compress.h>
-#include <uecm/byte/byte_utility.h>
-#include <uecm/alloc.h>
+#include <uecm/api/compression/compress.h>
+
+#include <ueum/ueum.h>
 
 #include <ei/ei.h>
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized.");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
-    if ((message = uecm_bytes_create_from_string(argv[1])) == NULL) {
+    if ((message = ueum_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
@@ -90,9 +90,9 @@ int main(int argc, char **argv) {
     exit_code = EXIT_SUCCESS;
 
 clean_up:
-    uecm_safe_free(message)
-    uecm_safe_free(compressed)
-    uecm_safe_free(decompressed)
+    ueum_safe_free(message)
+    ueum_safe_free(compressed)
+    ueum_safe_free(decompressed)
     if (ei_stacktrace_is_filled()) {
         ei_logger_error("An error occurred with the following stacktrace :");
         ei_stacktrace_print_all();
