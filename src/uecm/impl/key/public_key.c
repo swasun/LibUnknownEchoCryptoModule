@@ -126,6 +126,9 @@ void *uecm_public_key_get_rsa_impl(uecm_public_key *pk) {
 bool uecm_public_key_print(uecm_public_key *pk, FILE *out_fd) {
 	RSA *rsa;
 
+	ei_check_parameter_or_return(pk);
+	ei_check_parameter_or_return(out_fd);
+
 	rsa = NULL;
 
 	if (EVP_PKEY_id(pk->impl) == EVP_PKEY_RSA) {
