@@ -47,6 +47,12 @@ bool uecm_cipher_plain_data(unsigned char *plain_data, size_t plain_data_size,
     size_t signature_size, compressed_size;
     uecm_signer *signer;
 
+	ei_check_parameter_or_return(plain_data);
+	ei_check_parameter_or_return(plain_data_size);
+	ei_check_parameter_or_return(public_key);
+	ei_check_parameter_or_return(digest_name);
+	ei_check_parameter_or_return(cipher_name);
+
     result = false;
     encrypted_key = NULL;
     iv = NULL;
@@ -122,6 +128,12 @@ bool uecm_decipher_cipher_data(unsigned char *cipher_data,
     unsigned char *cipher_data_temp, *encrypted_key, *iv, *signature, *compressed;
     int cipher_data_len_temp, encrypted_key_len, iv_len, signature_size, plain_data_size_read, compressed_size;
     uecm_signer *signer;
+
+	ei_check_parameter_or_return(cipher_data);
+	ei_check_parameter_or_return(cipher_data_size);
+	ei_check_parameter_or_return(private_key);
+	ei_check_parameter_or_return(digest_name);
+	ei_check_parameter_or_return(cipher_name);
 
     result = false;
     stream = ueum_byte_stream_create();
