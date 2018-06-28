@@ -53,4 +53,7 @@
 #include <uecm/factory/sym_key_factory.h>
 #include <uecm/factory/x509_certificate_factory.h>
 
+#include <uecm/utils/crypto_random.h>
+#include <uecm/utils/friendly_name.h>
+
 #endif
