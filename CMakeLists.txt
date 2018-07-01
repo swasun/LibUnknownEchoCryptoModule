@@ -132,19 +132,24 @@ endif()
 
 # --- SEARCH DEPENDENCIES ---
 
-# Search LibErrorInterceptor
+# External dependencies
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external)
 
-if (WIN32)
-	set(LIBERRORINTERCEPTOR_INCLUDE "C:\\LibErrorInterceptor\\$ENV{name}\\include")
-	set(LIBERRORINTERCEPTOR_LIB "C:\\LibErrorInterceptor\\$ENV{name}\\lib\\ei_static.lib")
-endif ()
+# Location where external projects will be downloaded
+set (DOWNLOAD_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+    CACHE PATH "Location where external projects will be downloaded.")
+mark_as_advanced(DOWNLOAD_LOCATION)
 
-# Search LibUnknownEchoUtilsModule
+# LibErrorInterceptor
+include(libei)
 
-if (WIN32)
-	set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE "C:\\LibUnknownEchoUtilsModule\\$ENV{name}\\include")
-	set(LIBUNKNOWNECHOUTILSMODULE_LIB "C:\\LibUnknownEchoUtilsModule\\$ENV{name}\\lib\\ueum_static.lib")
-endif ()
+#ExternalProject_Get_Property(libei install_dir)
+#message(STATUS ${install_dir})
+#include_directories(${install_dir}/include)
+#target_link_libraries(project_b_exe ${install_dir}/lib/alib.lib)
+
+# LibUnknownEchoUtilsModule
+include(ueum)
 
 # Search OpenSSL
 if (UNIX)
@@ -161,8 +166,6 @@ elseif (WIN32)
 	set(LIBSSL_LIB "C:\\OpenSSL-Win64\\lib\\libssl.lib")
 	set(LIBCRYPTO_LIB "C:\\OpenSSL-Win64\\lib\\libcrypto.lib")
 endif ()
-
-
 
 # Search ZLib
 if (UNIX)
@@ -207,19 +210,16 @@ else ()
 endif ()
 target_link_libraries(${PROJECT_NAME_SHARED} ${ZLIB_LIBRARIES})
 target_link_libraries(${PROJECT_NAME_SHARED} ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
+target_link_libraries(${PROJECT_NAME_SHARED} "${LIBERRORINTERCEPTOR_LIBRARIES}")
+target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}")
+target_link_libraries(${PROJECT_NAME_SHARED} "${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}")
 if (WIN32)
-	target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_SHARED} "${LIBERRORINTERCEPTOR_LIB}")
-	target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_SHARED} "${LIBUNKNOWNECHOUTILSMODULE_LIB}")
 	target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${ZLIB_INCLUDE}")
 	target_link_libraries(${PROJECT_NAME_SHARED} "${ZLIB_LIB}")
 	target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${OPENSSL_INCLUDE}")
 	target_link_libraries(${PROJECT_NAME_SHARED} "${LIBSSL_LIB}")
 	target_link_libraries(${PROJECT_NAME_SHARED} "${LIBCRYPTO_LIB}")
-elseif (UNIX)
-	target_link_libraries(${PROJECT_NAME_SHARED} "-lei")
-	target_link_libraries(${PROJECT_NAME_SHARED} "-lueum")
 endif ()
 
 # Build static library
@@ -239,19 +239,16 @@ else ()
 endif ()
 target_link_libraries(${PROJECT_NAME_STATIC} ${ZLIB_LIBRARIES})
 target_link_libraries(${PROJECT_NAME_STATIC} ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
+	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBERRORINTERCEPTOR_LIBRARIES}")
+	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}")
+	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}")
 if (WIN32)
-	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBERRORINTERCEPTOR_LIB}")
-	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBUNKNOWNECHOUTILSMODULE_LIB}")
 	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${ZLIB_INCLUDE}")
 	target_link_libraries(${PROJECT_NAME_STATIC} "${ZLIB_LIB}")
 	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${OPENSSL_INCLUDE}")
 	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBSSL_LIB}")
 	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBCRYPTO_LIB}")
-elseif (UNIX)
-	target_link_libraries(${PROJECT_NAME_STATIC} "-lei")
-	target_link_libraries(${PROJECT_NAME_STATIC} "-lueum")
 endif ()
 
 
@@ -289,15 +286,12 @@ foreach (filePath ${files} )
 	get_filename_component(executableName ${filePath} NAME_WE)
 	message(STATUS "Build Program : ${executableName}")
 	add_executable(${executableName} ${filePath})
+	#add_dependencies(${executableName} libei)
+	target_link_libraries(${executableName} ${install_dir}/lib/libei_static.lib)
     target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
-    if (WIN32)
-		target_include_directories(${executableName} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE}")
-		target_link_libraries(${executableName} "${LIBERRORINTERCEPTOR_LIB}")
-		target_include_directories(${executableName} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE}")
-		target_link_libraries(${executableName} "${LIBUNKNOWNECHOUTILSMODULE_LIB}")
-	elseif (UNIX)
-		target_link_libraries(${executableName} "-lei")
-		target_link_libraries(${executableName} "-lueum")
-	endif ()
+	target_include_directories(${executableName} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
+	target_link_libraries(${executableName} "${LIBERRORINTERCEPTOR_LIBRARIES}")
+	target_include_directories(${executableName} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}")
+	target_link_libraries(${executableName} "${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}")
     set_target_properties(${executableName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${EXAMPLES_OUTPUT_PATH})
 endforeach ()
