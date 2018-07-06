@@ -143,11 +143,6 @@ mark_as_advanced(DOWNLOAD_LOCATION)
 # LibErrorInterceptor
 include(libei)
 
-#ExternalProject_Get_Property(libei install_dir)
-#message(STATUS ${install_dir})
-#include_directories(${install_dir}/include)
-#target_link_libraries(project_b_exe ${install_dir}/lib/alib.lib)
-
 # LibUnknownEchoUtilsModule
 include(ueum)
 
@@ -195,6 +190,7 @@ file(GLOB_RECURSE PROGRAM_TARGET_SRC_FILES "${SRC_PATH}/*.*")
 
 # Build shared library
 add_library(${PROJECT_NAME_SHARED} SHARED ${PROGRAM_TARGET_SRC_FILES})
+add_dependencies(${PROJECT_NAME_SHARED} libueum)
 target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME uecm)
 if (OPENSSL_LOCAL_LINK)
@@ -224,6 +220,7 @@ endif ()
 
 # Build static library
 add_library(${PROJECT_NAME_STATIC} STATIC ${PROGRAM_TARGET_SRC_FILES})
+add_dependencies(${PROJECT_NAME_STATIC} libueum)
 target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_STATIC} PROPERTIES OUTPUT_NAME uecm_static)
 if (OPENSSL_LOCAL_LINK)
@@ -286,6 +283,7 @@ foreach (filePath ${files} )
 	get_filename_component(executableName ${filePath} NAME_WE)
 	message(STATUS "Build Program : ${executableName}")
 	add_executable(${executableName} ${filePath})
+	add_dependencies(${executableName} libueum)
     target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
 	target_include_directories(${executableName} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
 	target_link_libraries(${executableName} "${LIBERRORINTERCEPTOR_LIBRARIES}")
