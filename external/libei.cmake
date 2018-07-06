@@ -1,3 +1,5 @@
+add_custom_target(ei)
+
 if (systemlib_LIBEI)
     if (WIN32)
         set(LIBERRORINTERCEPTOR_INCLUDE_DIR "C:\\LibErrorInterceptor\\$ENV{name}\\include")
@@ -11,7 +13,6 @@ else (systemlib_LIBEI)
 	if (UNIX)
 		find_library(LIBERRORINTERCEPTOR_LIBRARIES ei)
 		find_path(LIBERRORINTERCEPTOR_INCLUDE_DIR NAMES ei)
-		message(STATUS "LIBERRORINTERCEPTOR_LIBRARIES: " ${LIBERRORINTERCEPTOR_LIBRARIES})
 		if (LIBERRORINTERCEPTOR_LIBRARIES)
 			set(found TRUE)
 		else ()
@@ -26,7 +27,7 @@ else (systemlib_LIBEI)
 	endif ()
 
     if (NOT found)
-		include (ExternalProject)
+		include(ExternalProject)
 
 		set(LIBEI_URL https://github.com/swasun/LibErrorInterceptor.git)
 		set(LIBERRORINTERCEPTOR_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/libei_archive)

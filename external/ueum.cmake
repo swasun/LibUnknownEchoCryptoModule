@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
+
+add_custom_target(libueum)
 
 if (systemlib_LIBUEUM)
     if (WIN32)
@@ -6,7 +8,7 @@ if (systemlib_LIBUEUM)
         set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "C:\\LibUnknownEchoUtilsModule\\$ENV{name}\\lib\\ueum_static.lib")
     elseif (UNIX)
         set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "-lueum")
-    endif ()
+	endif ()
 else (systemlib_LIUEUM)
 	set(found FALSE)
 

@@ -105,7 +105,7 @@ else ()
 	### Reject potentially unsafe format string arguments
 	## -Werror=implicit-function-declaration
 	### Reject missing function prototypes
-    	#add_compile_options("-Wall" "-Wextra" "-Werror" "-pedantic" "-Werror=format-security" "-Werror=implicit-function-declaration")
+    #add_compile_options("-Wall" "-Wextra" "-Werror" "-pedantic" "-Werror=format-security" "-Werror=implicit-function-declaration")
 	add_compile_options("-Wall" "-Wextra" "-pedantic" "-Werror=format-security" "-Werror=implicit-function-declaration")
 endif ()
 
@@ -116,8 +116,8 @@ if (WIN32)
         string(REPLACE "." "" ver ${ver})
         string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
         set(${version} "0x${ver}")
-    endif()
-    endmacro()
+    endif ()
+    endmacro ()
     get_WIN32_WINNT(ver)
     add_definitions(-D_WIN32_WINNT=${ver})
 endif ()
@@ -146,38 +146,37 @@ include(libei)
 # LibUnknownEchoUtilsModule
 include(ueum)
 
-# Search OpenSSL
-if (UNIX)
-	find_package(PkgConfig REQUIRED)
-	if (NOT OPENSSL_LOCAL_LINK)
-		include_directories(${OPENSSL_INCLUDE_DIR})
-		pkg_search_module(OPENSSL REQUIRED openssl)
-		find_package(OPENSSL REQUIRED)
-		message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
-	endif ()
-elseif (WIN32)
-	#set(OPENSSL_ROOT_DIR CACHE PATH "C:/OpenSSL-Win64")
-	set(OPENSSL_INCLUDE "C:\\OpenSSL-Win64\\include")
-	set(LIBSSL_LIB "C:\\OpenSSL-Win64\\lib\\libssl.lib")
-	set(LIBCRYPTO_LIB "C:\\OpenSSL-Win64\\lib\\libcrypto.lib")
-endif ()
+include(openssl)
 
-# Search ZLib
-if (UNIX)
-	include_directories(${ZLIB_INCLUDE_DIRS})
-	pkg_search_module(ZLIB REQUIRED zlib)
-	message(STATUS "Using ZLib ${ZLIB_VERSION}")
-elseif (WIN32)
-	set(ZLIB_INCLUDE "C:\\zlib\\$ENV{name}\\include")
-	set(ZLIB_LIB "C:\\zlib\\$ENV{name}\\lib\\zlibstatic.lib")
-endif ()
+# ZLib
+include(zlib)
 
 # Search pthread
-
 if (UNIX)
 	find_package (Threads)
 endif ()
 
+set(LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES
+	zlib
+	ei
+	libueum
+	openssl
+)
+
+set(LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES
+	${ZLIB_LIBRARIES}
+	${LIBERRORINTERCEPTOR_LIBRARIES}
+	${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+)
+
+set(LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR
+	${ZLIB_INCLUDE_DIR}
+	${LIBERRORINTERCEPTOR_INCLUDE_DIR}
+	${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}
+	${OPENSSL_INCLUDE_DIR}
+)
 
 # --- BUILD UNKNOWNECHOCRYPTOMODULE ---
 
@@ -185,69 +184,23 @@ endif ()
 set(PROJECT_NAME_STATIC "${PROJECT_NAME}_static")
 set(PROJECT_NAME_SHARED "${PROJECT_NAME}_shared")
 
+include_directories(${LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR})
+link_directories(${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
+
 # Load source files
 file(GLOB_RECURSE PROGRAM_TARGET_SRC_FILES "${SRC_PATH}/*.*")
 
 # Build shared library
 add_library(${PROJECT_NAME_SHARED} SHARED ${PROGRAM_TARGET_SRC_FILES})
-add_dependencies(${PROJECT_NAME_SHARED} libueum)
+add_dependencies(${PROJECT_NAME_SHARED} ${LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES})
 target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${SRC_PATH}")
-set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME uecm)
-if (OPENSSL_LOCAL_LINK)
-    if (UNIX)
-        target_link_libraries(${PROJECT_NAME_SHARED} "${CMAKE_SOURCE_DIR}/lib/linux/libssl.so.1.1" -ldl)
-        target_link_libraries(${PROJECT_NAME_SHARED} "${CMAKE_SOURCE_DIR}/lib/linux/libcrypto.so.1.1" -ldl)
-    elseif (WIN32)
-        target_link_libraries(${PROJECT_NAME_SHARED} "${CMAKE_SOURCE_DIR}/lib/windows/libssl.lib")
-        target_link_libraries(${PROJECT_NAME_SHARED} "${CMAKE_SOURCE_DIR}/lib/windows/libcrypto.lib")
-    endif ()
-else ()
-	#target_link_libraries(${PROJECT_NAME_SHARED} ${OPENSSL_LIBRARIES})
-endif ()
-target_link_libraries(${PROJECT_NAME_SHARED} ${ZLIB_LIBRARIES})
-target_link_libraries(${PROJECT_NAME_SHARED} ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
-target_link_libraries(${PROJECT_NAME_SHARED} "${LIBERRORINTERCEPTOR_LIBRARIES}")
-target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}")
-target_link_libraries(${PROJECT_NAME_SHARED} "${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}")
-if (WIN32)
-	target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${ZLIB_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_SHARED} "${ZLIB_LIB}")
-	target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${OPENSSL_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_SHARED} "${LIBSSL_LIB}")
-	target_link_libraries(${PROJECT_NAME_SHARED} "${LIBCRYPTO_LIB}")
-endif ()
+set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME} uecm)
 
 # Build static library
 add_library(${PROJECT_NAME_STATIC} STATIC ${PROGRAM_TARGET_SRC_FILES})
-add_dependencies(${PROJECT_NAME_STATIC} libueum)
+add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES})
 target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_STATIC} PROPERTIES OUTPUT_NAME uecm_static)
-if (OPENSSL_LOCAL_LINK)
-	if (UNIX)
-        target_link_libraries(${PROJECT_NAME_STATIC} "${CMAKE_SOURCE_DIR}/lib/linux/libssl.so.1.1" -ldl)
-        target_link_libraries(${PROJECT_NAME_STATIC} "${CMAKE_SOURCE_DIR}/lib/linux/libcrypto.so.1.1" -ldl)
-    elseif (WIN32)
-        target_link_libraries(${PROJECT_NAME_STATIC} "${CMAKE_SOURCE_DIR}/lib/windows/libssl.lib")
-        target_link_libraries(${PROJECT_NAME_STATIC} "${CMAKE_SOURCE_DIR}/lib/windows/libcrypto.lib")
-    endif ()
-else ()
-    #target_link_libraries(${PROJECT_NAME_STATIC} ${OPENSSL_LIBRARIES})
-endif ()
-target_link_libraries(${PROJECT_NAME_STATIC} ${ZLIB_LIBRARIES})
-target_link_libraries(${PROJECT_NAME_STATIC} ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBERRORINTERCEPTOR_LIBRARIES}")
-	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}")
-if (WIN32)
-	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${ZLIB_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${ZLIB_LIB}")
-	target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${OPENSSL_INCLUDE}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBSSL_LIB}")
-	target_link_libraries(${PROJECT_NAME_STATIC} "${LIBCRYPTO_LIB}")
-endif ()
-
 
 # --- INSTALL ---
 
@@ -283,11 +236,12 @@ foreach (filePath ${files} )
 	get_filename_component(executableName ${filePath} NAME_WE)
 	message(STATUS "Build Program : ${executableName}")
 	add_executable(${executableName} ${filePath})
-	add_dependencies(${executableName} libueum)
-    target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
-	target_include_directories(${executableName} PUBLIC "${LIBERRORINTERCEPTOR_INCLUDE_DIR}")
-	target_link_libraries(${executableName} "${LIBERRORINTERCEPTOR_LIBRARIES}")
-	target_include_directories(${executableName} PUBLIC "${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}")
-	target_link_libraries(${executableName} "${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}")
+	add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES})
+	target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
+	target_link_libraries(${executableName} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
+	target_link_libraries(${executableName} ${OPENSSL_LIBRARIES})
+	if (UNIX)
+		target_link_libraries(${executableName} "-ldl")
+	endif ()
     set_target_properties(${executableName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${EXAMPLES_OUTPUT_PATH})
 endforeach ()
