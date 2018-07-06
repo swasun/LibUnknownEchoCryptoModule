@@ -11,9 +11,6 @@ cmake_minimum_required(VERSION 3.8)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-# Set as TRUE to link with openssl dependencies in lib folder. Set to FALSE otherwise.
-set(OPENSSL_LOCAL_LINK TRUE)
-
 # --- PATH ---
 
 set(${CMAKE_CURRENT_SOURCE_DIR} ..)
@@ -156,7 +153,7 @@ if (UNIX)
 	find_package (Threads)
 endif ()
 
-set(LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES
+set(LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES
 	zlib
 	ei
 	libueum
@@ -180,25 +177,24 @@ set(LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR
 
 # --- BUILD UNKNOWNECHOCRYPTOMODULE ---
 
-# Options
-set(PROJECT_NAME_STATIC "${PROJECT_NAME}_static")
-set(PROJECT_NAME_SHARED "${PROJECT_NAME}_shared")
-
 include_directories(${LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR})
 link_directories(${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
+
+set(PROJECT_NAME_STATIC "${PROJECT_NAME}_static")
+set(PROJECT_NAME_SHARED "${PROJECT_NAME}_shared")
 
 # Load source files
 file(GLOB_RECURSE PROGRAM_TARGET_SRC_FILES "${SRC_PATH}/*.*")
 
 # Build shared library
 add_library(${PROJECT_NAME_SHARED} SHARED ${PROGRAM_TARGET_SRC_FILES})
-add_dependencies(${PROJECT_NAME_SHARED} ${LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES})
+add_dependencies(${PROJECT_NAME_SHARED} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME} uecm)
 
 # Build static library
 add_library(${PROJECT_NAME_STATIC} STATIC ${PROGRAM_TARGET_SRC_FILES})
-add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES})
+add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_STATIC} PROPERTIES OUTPUT_NAME uecm_static)
 
@@ -236,7 +232,7 @@ foreach (filePath ${files} )
 	get_filename_component(executableName ${filePath} NAME_WE)
 	message(STATUS "Build Program : ${executableName}")
 	add_executable(${executableName} ${filePath})
-	add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTO_MODULE_DEPENDENCIES})
+	add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 	target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
 	target_link_libraries(${executableName} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
 	target_link_libraries(${executableName} ${OPENSSL_LIBRARIES})
