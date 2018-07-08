@@ -26,7 +26,6 @@ if (systemlib_LIBUEUM)
     elseif (UNIX)
         set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "-lueum")
 	endif ()
-	set(LIBUNKNOWNECHOUTILSMODULE_SET true)
 else (systemlib_LIUEUM)
 	set(found FALSE)
 
@@ -55,28 +54,21 @@ else (systemlib_LIUEUM)
 		set(LIBUEUM_INSTALL ${CMAKE_CURRENT_BINARY_DIR}/libueum/install)
 
 		if (WIN32)
-			set(libueum_STATIC_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}\\ueum_static.lib")
+			set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}\\ueum_static.lib")
 		else()
-			set(libueum_STATIC_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/libueum/install/lib/libueum.a)
+			set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/libueum/install/lib/libueum.a)
 		endif()
 
 		ExternalProject_Add(libueum
 			PREFIX libueum
 			GIT_REPOSITORY ${LIBUEUM_URL}	
 			BUILD_IN_SOURCE 1
-			BUILD_BYPRODUCTS ${libueum_STATIC_LIBRARIES}
+			BUILD_BYPRODUCTS ${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES}
 			DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
 			CMAKE_CACHE_ARGS
 				-DCMAKE_BUILD_TYPE:STRING=Release
 				-DCMAKE_INSTALL_PREFIX:STRING=${LIBUEUM_INSTALL}
 		)
-
-		if (WIN32)
-			set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}\\libueum\\install\\include")
-			set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}\\libueum\\install\\lib\\ueum_static.lib")
-		elseif (UNIX)
-			set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "-lueum")
-		endif ()
 
 		set(LIBUNKNOWNECHOUTILSMODULE_SET true)
 	endif ()
