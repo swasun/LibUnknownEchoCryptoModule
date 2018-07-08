@@ -141,7 +141,7 @@ mark_as_advanced(DOWNLOAD_LOCATION)
 include(libei)
 
 # LibUnknownEchoUtilsModule
-include(ueum)
+include(libueum)
 
 include(openssl)
 
