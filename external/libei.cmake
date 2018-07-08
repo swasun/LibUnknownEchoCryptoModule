@@ -17,7 +17,7 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
-add_custom_target(ei)
+set(LIBERRORINTERCEPTOR_SET false)
 
 if (systemlib_LIBEI)
     if (WIN32)
@@ -25,7 +25,8 @@ if (systemlib_LIBEI)
         set(LIBERRORINTERCEPTOR_LIBRARIES "C:\\LibErrorInterceptor\\$ENV{name}\\lib\\ei_static.lib")
     elseif (UNIX)
         set(LIBERRORINTERCEPTOR_LIBRARIES "-lei")
-    endif ()
+	endif ()
+	set(LIBERRORINTERCEPTOR_SET true)
 else (systemlib_LIBEI)
 	set(found FALSE)
 
@@ -69,6 +70,8 @@ else (systemlib_LIBEI)
 				-DCMAKE_BUILD_TYPE:STRING=Release
 				-DCMAKE_INSTALL_PREFIX:STRING=${LIBEI_INSTALL}
 		)
+
+		set(LIBERRORINTERCEPTOR_SET true)
 
 		if (WIN32)
 			set(LIBERRORINTERCEPTOR_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}\\libei\\install\\include")

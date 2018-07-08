@@ -17,6 +17,8 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
+ set(LIBUNKNOWNECHOUTILSMODULE_SET false)
+
 if (systemlib_LIBUEUM)
     if (WIN32)
         set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR "C:\\LibUnknownEchoUtilsModule\\$ENV{name}\\include")
@@ -27,7 +29,6 @@ if (systemlib_LIBUEUM)
 	set(LIBUNKNOWNECHOUTILSMODULE_SET true)
 else (systemlib_LIUEUM)
 	set(found FALSE)
-	set(LIBUNKNOWNECHOUTILSMODULE_SET false)
 
 	if (UNIX)
 		find_library(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ueum)
