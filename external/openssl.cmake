@@ -19,13 +19,17 @@
 
 set(OPENSSL_TARGET_SET false)
 
+message(STATUS "CMAKE_CURRENT_BINARY_DIR: " ${CMAKE_CURRENT_BINARY_DIR})
+
 if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a)
+    message(STATUS "TRUE")
     set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/)
     set(OPENSSL_LIBRARIES
         ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a
         ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libssl.a
     )
 else ()
+message(STATUS "FALSE")
     include (ExternalProject)
 
     if (UNIX)
