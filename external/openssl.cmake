@@ -54,8 +54,8 @@ else ()
 
     set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/)
     set(OPENSSL_LIBRARIES
-        ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a
         ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libssl.a
+        ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a
     )
     set(OPENSSL_TARGET_SET true)
 endif ()
