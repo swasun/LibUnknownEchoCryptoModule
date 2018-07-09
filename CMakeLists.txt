@@ -133,7 +133,7 @@ endif()
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external)
 
 # Location where external projects will be downloaded
-set (DOWNLOAD_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+set (DOWNLOAD_LOCATION "${ROOT_BUILD_DIR}/downloads"
     CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
 
