@@ -46,30 +46,30 @@ if (systemlib_ZLIB)
 else (systemlib_ZLIB)
     include (ExternalProject)
 
-    set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/zlib_archive)
+    set(ZLIB_INCLUDE_DIR ${ROOT_BUILD_DIR}/external/zlib_archive)
     set(ZLIB_URL https://github.com/madler/zlib)
-    set(ZLIB_BUILD ${CMAKE_CURRENT_BINARY_DIR}/zlib/src/zlib)
-    set(ZLIB_INSTALL ${CMAKE_CURRENT_BINARY_DIR}/zlib/install)
+    set(ZLIB_BUILD ${ROOT_BUILD_DIR}/zlib/src/zlib)
+    set(ZLIB_INSTALL ${ROOT_BUILD_DIR}/zlib/install)
     # Match zlib version in tensorflow/workspace.bzl
     set(ZLIB_TAG v1.2.11)
 
     if (WIN32)
       if (${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
         set(zlib_STATIC_LIBRARIES
-            debug ${CMAKE_CURRENT_BINARY_DIR}/zlib/install/lib/zlibstaticd.lib
-            optimized ${CMAKE_CURRENT_BINARY_DIR}/zlib/install/lib/zlibstatic.lib)
+            debug ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.lib
+            optimized ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstatic.lib)
       else ()
         if (CMAKE_BUILD_TYPE EQUAL Debug)
           set(zlib_STATIC_LIBRARIES
-              ${CMAKE_CURRENT_BINARY_DIR}/zlib/install/lib/zlibstaticd.lib)
+              ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.lib)
         else ()
           set(zlib_STATIC_LIBRARIES
-              ${CMAKE_CURRENT_BINARY_DIR}/zlib/install/lib/zlibstatic.lib)
+              ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstatic.lib)
         endif ()
       endif ()
     else ()
       set(ZLIB_LIBRARIES
-          ${CMAKE_CURRENT_BINARY_DIR}/zlib/install/lib/libz.a)
+          ${ROOT_BUILD_DIR}/zlib/install/lib/libz.a)
     endif ()
 
     ExternalProject_Add(zlib
