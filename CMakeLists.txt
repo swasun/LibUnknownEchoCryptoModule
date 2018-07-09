@@ -6,10 +6,10 @@
 PROJECT(unknownechocryptomodule C)
 cmake_minimum_required(VERSION 3.8)
 
-
 # --- GLOBAL OPTIONS ---
 
 set(CMAKE_VERBOSE_MAKEFILE on)
+SET(ROOT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Default root path of the current build directory")
 
 # --- PATH ---
 

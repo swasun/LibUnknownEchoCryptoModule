@@ -19,43 +19,43 @@
 
 set(OPENSSL_TARGET_SET false)
 
-if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a)
-    set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/)
+if (EXISTS ${ROOT_BUILD_DIR}/openssl/src/openssl/libcrypto.a)
+    set(OPENSSL_INCLUDE_DIR ${ROOT_BUILD_DIR}/openssl/src/openssl/)
     set(OPENSSL_LIBRARIES
-        ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a
-        ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libssl.a
+        ${ROOT_BUILD_DIR}/openssl/src/openssl/libcrypto.a
+        ${ROOT_BUILD_DIR}/openssl/src/openssl/libssl.a
     )
 else ()
     include (ExternalProject)
 
     if (UNIX)
         ExternalProject_Add(openssl
-            PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+            PREFIX openssl
             URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
             CONFIGURE_COMMAND ./config no-crypto-mdebug no-shared
                 no-crypto-mdebug-backtrace no-unit-test no-weak-ssl-ciphers
                 no-zlib no-zlib-dynamic no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR}
             BUILD_COMMAND make depend && make
             INSTALL_COMMAND make install_sw
-            #BUILD_IN_SOURCE 1
-            DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            BUILD_IN_SOURCE 1
+            DOWNLOAD_DIR ${ROOT_BUILD_DIR}
         )
     else ()
         ExternalProject_Add(openssl
-            PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+            PREFIX openssl
             URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
             CONFIGURE_COMMAND perl Configure VC-WIN64A "--prefix=${CMAKE_INSTALL_PREFIX}"
             BUILD_COMMAND "ms\\do_win64a.bat"
             COMMAND nmake -f "ms\\ntdll.mak"
-            #BUILD_IN_SOURCE 1
+            BUILD_IN_SOURCE 1
             INSTALL_COMMAND nmake -f "ms\\ntdll.mak" install
         )
     endif ()
 
-    set(OPENSSL_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/)
+    set(OPENSSL_INCLUDE_DIR ${ROOT_BUILD_DIR}/openssl/src/openssl/)
     set(OPENSSL_LIBRARIES
-        ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libssl.a
-        ${CMAKE_CURRENT_BINARY_DIR}/openssl/src/openssl/libcrypto.a
+        ${ROOT_BUILD_DIR}/openssl/src/openssl/libssl.a
+        ${ROOT_BUILD_DIR}/openssl/src/openssl/libcrypto.a
     )
     set(OPENSSL_TARGET_SET true)
 endif ()

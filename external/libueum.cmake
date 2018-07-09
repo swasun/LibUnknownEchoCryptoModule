@@ -17,7 +17,7 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
- set(LIBUNKNOWNECHOUTILSMODULE_SET false)
+set(LIBUNKNOWNECHOUTILSMODULE_SET false)
 
 if (systemlib_LIBUEUM)
     if (WIN32)
