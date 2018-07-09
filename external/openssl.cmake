@@ -30,7 +30,7 @@ else ()
 
     if (UNIX)
         ExternalProject_Add(openssl
-            PREFIX openssl
+            PREFIX ${ROOT_BUILD_DIR}/openssl
             URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
             CONFIGURE_COMMAND ./config no-crypto-mdebug no-shared
                 no-crypto-mdebug-backtrace no-unit-test no-weak-ssl-ciphers
@@ -42,7 +42,7 @@ else ()
         )
     else ()
         ExternalProject_Add(openssl
-            PREFIX openssl
+            PREFIX ${ROOT_BUILD_DIR}/openssl
             URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
             CONFIGURE_COMMAND perl Configure VC-WIN64A "--prefix=${CMAKE_INSTALL_PREFIX}"
             BUILD_COMMAND "ms\\do_win64a.bat"
