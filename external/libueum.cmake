@@ -28,9 +28,9 @@ else (systemlib_LIUEUM)
 	include (ExternalProject)
 
 	set(LIBUEUM_URL https://github.com/swasun/LibUnknownEchoUtilsModule.git)
-	set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR ${ROOT_BUILD_DIR}/external/libueum_archive)
-	set(LIBUEUM_BUILD ${ROOT_BUILD_DIR}/libueum/src/libueum)
 	set(LIBUEUM_INSTALL ${ROOT_BUILD_DIR}/libueum/install)
+	set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR ${LIBUEUM_INSTALL}/include)
+	set(LIBUEUM_BUILD ${ROOT_BUILD_DIR}/libueum/src/libueum)
 
 	if (WIN32)
 		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${ROOT_BUILD_DIR}\\ueum_static.lib")
