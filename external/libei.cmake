@@ -35,7 +35,7 @@ else (systemlib_LIBEI)
 	if (WIN32)
 		set(LIBERRORINTERCEPTOR_LIBRARIES "${ROOT_BUILD_DIR}\\ei_static.lib")
 	else()
-		set(LIBERRORINTERCEPTOR_LIBRARIES ${ROOT_BUILD_DIR}/libei/install/lib/libei.a)
+		set(LIBERRORINTERCEPTOR_LIBRARIES ${ROOT_BUILD_DIR}/libei/install/lib/libei_static.a)
 	endif()
 
 	ExternalProject_Add(libei
