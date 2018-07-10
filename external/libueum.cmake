@@ -35,7 +35,7 @@ else (systemlib_LIUEUM)
 	if (WIN32)
 		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${ROOT_BUILD_DIR}\\ueum_static.lib")
 	else()
-		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ${ROOT_BUILD_DIR}/libueum/install/lib/libueum.a)
+		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ${ROOT_BUILD_DIR}/libueum/install/lib/libueum_static.a)
 	endif()
 
 	ExternalProject_Add(libueum
