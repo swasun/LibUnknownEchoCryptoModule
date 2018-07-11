@@ -6,7 +6,7 @@
 PROJECT(unknownechocryptomodule C)
 cmake_minimum_required(VERSION 3.8)
 
-message(STATUS ${env.configurations.name})
+set(systemlib_OPENSSL TRUE)
 
 # --- GLOBAL OPTIONS ---
 
@@ -36,11 +36,10 @@ if (MSVC)
 	if (CMAKE_BUILD_TYPE STREQUAL "Release")
 		add_compile_options("$<$<CONFIG:RELEASE>:/O2>")
 	endif ()
-	add_compile_options("/W4")
 	if (MSVC_VERSION GREATER_EQUAL 1900)
-		add_compile_options("/permissive-") # Add /permissive- (kind of -pedantic) available since Visual Studio 2017
+		#add_compile_options("/permissive-") # Add /permissive- (kind of -pedantic) available since Visual Studio 2017
 	endif ()
-    add_compile_options("/W4") 
+    #add_compile_options("/W4") 
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON) # This variable is used to initialize the property on each target as it is created
 	set(CMAKE_C_FLAGS "${CMAKE_ENABLE_C99}") # Compile with C99 rules
 
@@ -163,7 +162,9 @@ list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES libei)
 
 list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES libueum)
 
-list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES openssl)
+if (NOT systemlib_OPENSSL)
+	list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES openssl)
+endif ()
 
 set(LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES
 	${ZLIB_LIBRARIES}
