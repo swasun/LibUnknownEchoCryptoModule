@@ -46,7 +46,7 @@ if (systemlib_ZLIB)
 else (systemlib_ZLIB)
     include (ExternalProject)
 
-    set(ZLIB_INCLUDE_DIR ${ROOT_BUILD_DIR}/external/zlib_archive)
+    set(ZLIB_INCLUDE_DIR ${ROOT_BUILD_DIR}/zlib/install/include)
     set(ZLIB_URL https://github.com/madler/zlib)
     set(ZLIB_BUILD ${ROOT_BUILD_DIR}/zlib/src/zlib)
     set(ZLIB_INSTALL ${ROOT_BUILD_DIR}/zlib/install)
@@ -55,16 +55,16 @@ else (systemlib_ZLIB)
 
     if (WIN32)
       if (${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
-        set(zlib_STATIC_LIBRARIES
+        set(ZLIB_LIBRARIES
             debug ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.lib
-            optimized ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstatic.lib)
+            optimized ${ROOT_BUILD_DIR}/zlib/install/lib/libzlibstatic.lib)
       else ()
         if (CMAKE_BUILD_TYPE EQUAL Debug)
-          set(zlib_STATIC_LIBRARIES
+          set(ZLIB_LIBRARIES
               ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.lib)
         else ()
-          set(zlib_STATIC_LIBRARIES
-              ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstatic.lib)
+          set(ZLIB_LIBRARIES
+              ${ROOT_BUILD_DIR}/zlib/install/lib/libzlibstatic.lib)
         endif ()
       endif ()
     else ()

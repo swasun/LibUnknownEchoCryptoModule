@@ -19,6 +19,7 @@
 
 #include <uecm/impl/errorHandling/zlib_error_handling.h>
 
+#undef HAVE_UNISTD_H
 #include <zlib.h>
 
 void uecm_zlib_error_handling_impl(int error_code) {
