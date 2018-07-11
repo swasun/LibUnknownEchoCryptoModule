@@ -35,13 +35,13 @@ else ()
     ExternalProject_Add(openssl
         PREFIX openssl
         URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
-        CONFIGURE_COMMAND perl Configure VC-WIN32 no-crypto-mdebug no-shared
+        CONFIGURE_COMMAND perl Configure VC-WIN64A no-crypto-mdebug no-shared # Fix for x86 with VC-WIN32
             no-crypto-mdebug-backtrace no-unit-test no-weak-ssl-ciphers
             no-zlib no-zlib-dynamic no-idea no-mdc2 no-rc5 "--prefix=${ROOT_BUILD_DIR}"
         #BUILD_COMMAND "ms\\do_win64a.bat"
         #COMMAND nmake -f "ms\\ntdll.mak"
-		#BUILD_COMMAND nmake
-		#INSTALL_COMMAND nmake install
+		BUILD_COMMAND nmake
+		INSTALL_COMMAND nmake install
         BUILD_IN_SOURCE 1
         #INSTALL_COMMAND nmake -f "ms\\ntdll.mak" install
         DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
