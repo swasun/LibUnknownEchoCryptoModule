@@ -33,7 +33,7 @@ else (systemlib_LIUEUM)
 	set(LIBUEUM_BUILD ${ROOT_BUILD_DIR}/libueum/src/libueum)
 
 	if (WIN32)
-		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${ROOT_BUILD_DIR}\\libueum\\install\\lib\\ueum_static.lib")
+		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${ROOT_BUILD_DIR}\\libueum\\install\\lib\\libueum_static.a")
 	else()
 		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ${ROOT_BUILD_DIR}/libueum/install/lib/libueum_static.a)
 	endif()

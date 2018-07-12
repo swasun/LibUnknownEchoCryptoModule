@@ -56,15 +56,15 @@ else (systemlib_ZLIB)
     if (WIN32)
       if (${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
         set(ZLIB_LIBRARIES
-            debug ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.lib
-            optimized ${ROOT_BUILD_DIR}/zlib/install/lib/libzlibstatic.lib)
+            debug ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.a
+            optimized ${ROOT_BUILD_DIR}/zlib/install/lib/libzlibstatic.a)
       else ()
         if (CMAKE_BUILD_TYPE EQUAL Debug)
           set(ZLIB_LIBRARIES
-              ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.lib)
+              ${ROOT_BUILD_DIR}/zlib/install/lib/zlibstaticd.a)
         else ()
           set(ZLIB_LIBRARIES
-              ${ROOT_BUILD_DIR}/zlib/install/lib/libzlibstatic.lib)
+              ${ROOT_BUILD_DIR}/zlib/install/lib/libzlibstatic.a)
         endif ()
       endif ()
     else ()
