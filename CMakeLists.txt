@@ -6,7 +6,9 @@
 PROJECT(unknownechocryptomodule C)
 cmake_minimum_required(VERSION 3.8)
 
-set(systemlib_OPENSSL TRUE)
+if (WIN32)
+	set(systemlib_OPENSSL TRUE)
+endif ()
 
 # --- GLOBAL OPTIONS ---
 
