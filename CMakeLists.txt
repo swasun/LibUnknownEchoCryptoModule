@@ -168,9 +168,9 @@ if (UNIX)
 	find_package (Threads)
 endif ()
 
-set(LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES
-	zlib
-)
+if (NOT ZLIB_SYSTEM)
+	list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES zlib)
+endif ()
 
 if (NOT LIBEI_SYSTEM)
 	list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES libei)
@@ -213,13 +213,17 @@ file(GLOB_RECURSE PROGRAM_TARGET_SRC_FILES "${SRC_PATH}/*.*")
 
 # Build shared library
 add_library(${PROJECT_NAME_SHARED} SHARED ${PROGRAM_TARGET_SRC_FILES})
-add_dependencies(${PROJECT_NAME_SHARED} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
+if (LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES)
+	add_dependencies(${PROJECT_NAME_SHARED} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
+endif ()
 target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME} uecm)
 
 # Build static library
 add_library(${PROJECT_NAME_STATIC} STATIC ${PROGRAM_TARGET_SRC_FILES})
-add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
+if (LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES)
+	add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
+endif ()
 target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_STATIC} PROPERTIES OUTPUT_NAME uecm_static)
 
@@ -249,7 +253,9 @@ foreach (filePath ${files} )
 	get_filename_component(executableName ${filePath} NAME_WE)
 	message(STATUS "Build Program : ${executableName}")
 	add_executable(${executableName} ${filePath})
-	add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
+	if (LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES)
+		add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
+	endif ()
 	target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
 	target_link_libraries(${executableName} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
 	target_link_libraries(${executableName} ${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES})

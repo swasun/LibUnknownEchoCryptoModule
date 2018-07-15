@@ -33,16 +33,19 @@
  ##########################################################################################
 
 if (ZLIB_SYSTEM)
-    find_package(PkgConfig)
-    pkg_search_module(ZLIB REQUIRED zlib)
-    set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
-    set(ADD_LINK_DIRECTORY ${ADD_LINK_DIRECTORY} ${ZLIB_LIBRARY_DIRS})
-    set(ADD_CFLAGS ${ADD_CFLAGS} ${ZLIB_CFLAGS_OTHER})
-
-    # To meet DEPENDS zlib from other projects.
-    # If we hit this line, zlib is already built and installed to the system.
-    add_custom_target(zlib)
-
+	if (WIN32)
+		set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR "C:\\zlib\\$ENV{name}\\include")
+        set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "C:\\zlib\\$ENV{name}\\lib\\zlibstatic.lib")
+	else ()
+		find_package(PkgConfig)
+		pkg_search_module(ZLIB REQUIRED zlib)
+		set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
+		set(ADD_LINK_DIRECTORY ${ADD_LINK_DIRECTORY} ${ZLIB_LIBRARY_DIRS})
+		set(ADD_CFLAGS ${ADD_CFLAGS} ${ZLIB_CFLAGS_OTHER})
+		# To meet DEPENDS zlib from other projects.
+		# If we hit this line, zlib is already built and installed to the system.
+		add_custom_target(zlib)
+	endif ()
 else (ZLIB_SYSTEM)
     include (ExternalProject)
 
