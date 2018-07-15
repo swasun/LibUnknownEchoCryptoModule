@@ -17,35 +17,62 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
-include (ExternalProject)
+if (OPENSSL_SYSTEM)
+	if (WIN32)
+        set(OPENSSL_INCLUDE_DIR "C:\\OpenSSL-Win64\\include")
+        set(OPENSSL_LIBRARIES
+			"C:\\OpenSSL-Win64\\lib\\libssl.lib"
+			"C:\\OpenSSL-Win64\\lib\\libcrypto.lib"
+		)
+    elseif (UNIX)
+        set(OPENSSL_LIBRARIES
+			"-lssl"
+			"-lcrypto"
+		)
+	endif ()
+else (OPENSSL_SYSTEM)
+	include (ExternalProject)
 
-if (UNIX)
-    ExternalProject_Add(openssl
-        PREFIX openssl
-        URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
-        CONFIGURE_COMMAND ./config no-crypto-mdebug no-shared
-            no-crypto-mdebug-backtrace no-unit-test no-weak-ssl-ciphers
-            no-zlib no-zlib-dynamic no-idea no-mdc2 no-rc5 --prefix=${CMAKE_BINARY_DIR}
-        BUILD_COMMAND make depend && make
-        INSTALL_COMMAND make install_sw
-        BUILD_IN_SOURCE 1
-        DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
-    )
-else ()
-    ExternalProject_Add(openssl
-        PREFIX openssl
-        URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
-        CONFIGURE_COMMAND perl Configure VC-WIN64A "--prefix=${CMAKE_INSTALL_PREFIX}"
-        BUILD_COMMAND "ms\\do_win64a.bat"
-        COMMAND nmake -f "ms\\ntdll.mak"
-        BUILD_IN_SOURCE 1
-        INSTALL_COMMAND nmake -f "ms\\ntdll.mak" install
-        DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
-    )
-endif ()
+	if (UNIX)
+		ExternalProject_Add(openssl
+			PREFIX openssl
+			URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
+			CONFIGURE_COMMAND ./config no-crypto-mdebug no-shared
+				no-crypto-mdebug-backtrace no-unit-test no-weak-ssl-ciphers
+				no-zlib no-zlib-dynamic no-idea no-mdc2 no-rc5 --prefix=${ROOT_BUILD_DIR}
+			BUILD_COMMAND make depend && make
+			INSTALL_COMMAND make install_sw
+			BUILD_IN_SOURCE 1
+			DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
+		)
+	else ()
+		ExternalProject_Add(openssl
+			PREFIX openssl
+			URL http://www.openssl.org/source/openssl-1.1.0h.tar.gz
+			CONFIGURE_COMMAND perl Configure VC-WIN64A no-crypto-mdebug no-shared # Fix for x86 with VC-WIN32
+				no-crypto-mdebug-backtrace no-unit-test no-weak-ssl-ciphers
+				no-zlib no-zlib-dynamic no-idea no-mdc2 no-rc5 "--prefix=${ROOT_BUILD_DIR}"
+			#BUILD_COMMAND "ms\\do_win64a.bat"
+			#COMMAND nmake -f "ms\\ntdll.mak"
+			BUILD_COMMAND nmake
+			INSTALL_COMMAND nmake install
+			BUILD_IN_SOURCE 1
+			#INSTALL_COMMAND nmake -f "ms\\ntdll.mak" install
+			DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
+		)
+	endif ()
 
-set(OPENSSL_INCLUDE_DIR ${ROOT_BUILD_DIR}/openssl/src/openssl/)
-set(OPENSSL_LIBRARIES
-    ${ROOT_BUILD_DIR}/openssl/src/openssl/libssl.a
-    ${ROOT_BUILD_DIR}/openssl/src/openssl/libcrypto.a
-)
+	set(OPENSSL_INCLUDE_DIR ${ROOT_BUILD_DIR}/openssl/src/openssl/)
+
+	if (UNIX)
+		set(OPENSSL_LIBRARIES
+			${ROOT_BUILD_DIR}/openssl/src/openssl/libssl.a
+			${ROOT_BUILD_DIR}/openssl/src/openssl/libcrypto.a
+		)
+	else ()
+		set(OPENSSL_LIBRARIES
+			${ROOT_BUILD_DIR}/openssl/src/openssl/libssl.lib
+			${ROOT_BUILD_DIR}/openssl/src/openssl/libcrypto.lib
+		)
+	endif ()
+endif (OPENSSL_SYSTEM)

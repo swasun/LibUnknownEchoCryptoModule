@@ -23,6 +23,7 @@
 
 #include <ei/ei.h>
 
+#undef HAVE_UNISTD_H
 #include <zlib.h>
 
 #include <stdlib.h>

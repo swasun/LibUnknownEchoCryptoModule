@@ -6,7 +6,6 @@
 PROJECT(unknownechocryptomodule C)
 cmake_minimum_required(VERSION 3.8)
 
-
 # --- GLOBAL OPTIONS ---
 
 set(CMAKE_VERBOSE_MAKEFILE on)
@@ -20,6 +19,10 @@ set(LIBEI_INSTALL ${ROOT_BUILD_DIR}/libei/install CACHE STRING "Default LIBEI in
 
 SET(LIBUEUM_SYSTEM FALSE CACHE BOOL "Default LIBUEUM installation type")
 set(LIBUEUM_INSTALL ${ROOT_BUILD_DIR}/libueum/install CACHE STRING "Default LIBUEUM install path")
+
+if (WIN32)
+	set(OPENSSL_SYSTEM TRUE)
+endif ()
 
 # --- PATH ---
 
@@ -44,11 +47,10 @@ if (MSVC)
 	if (CMAKE_BUILD_TYPE STREQUAL "Release")
 		add_compile_options("$<$<CONFIG:RELEASE>:/O2>")
 	endif ()
-	add_compile_options("/W4")
 	if (MSVC_VERSION GREATER_EQUAL 1900)
-		add_compile_options("/permissive-") # Add /permissive- (kind of -pedantic) available since Visual Studio 2017
+		#add_compile_options("/permissive-") # Add /permissive- (kind of -pedantic) available since Visual Studio 2017
 	endif ()
-    add_compile_options("/W4") 
+    #add_compile_options("/W4") 
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON) # This variable is used to initialize the property on each target as it is created
 	set(CMAKE_C_FLAGS "${CMAKE_ENABLE_C99}") # Compile with C99 rules
 
@@ -171,7 +173,9 @@ list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES libei)
 
 list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES libueum)
 
-list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES openssl)
+if (NOT systemlib_OPENSSL)
+	list(APPEND LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES openssl)
+endif ()
 
 set(LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES
 	${ZLIB_LIBRARIES}
@@ -241,6 +245,7 @@ foreach (filePath ${files} )
 	add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 	target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
 	target_link_libraries(${executableName} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
+	target_link_libraries(${executableName} ${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES})
 	target_link_libraries(${executableName} ${ZLIB_LIBRARIES})
 	target_link_libraries(${executableName} ${OPENSSL_LIBRARIES})
 	if (UNIX)
