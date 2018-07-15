@@ -17,25 +17,24 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
-if (systemlib_LIBEI)
+if (LIBEI_SYSTEM)
 	if (WIN32)
 		set(LIBERRORINTERCEPTOR_INCLUDE_DIR "C:\\LibErrorInterceptor\\$ENV{name}\\include")
 		set(LIBERRORINTERCEPTOR_LIBRARIES "C:\\LibErrorInterceptor\\$ENV{name}\\lib\\ei_static.lib")
 	elseif (UNIX)
 		set(LIBERRORINTERCEPTOR_LIBRARIES "-lei")
 	endif ()
-else (systemlib_LIBEI)
+else (LIBEI_SYSTEM)
 	include (ExternalProject)
 
 	set(LIBEI_URL https://github.com/swasun/LibErrorInterceptor.git)
-	set(LIBERRORINTERCEPTOR_INCLUDE_DIR ${ROOT_BUILD_DIR}/external/libei_archive)
+	set(LIBERRORINTERCEPTOR_INCLUDE_DIR ${LIBEI_INSTALL}/external/libei_archive)
 	set(LIBEI_BUILD ${ROOT_BUILD_DIR}/libei/src/libei)
-	set(LIBEI_INSTALL ${ROOT_BUILD_DIR}/libei/install)
 
 	if (WIN32)
-		set(LIBERRORINTERCEPTOR_LIBRARIES "${ROOT_BUILD_DIR}\\ei_static.lib")
+		set(LIBERRORINTERCEPTOR_LIBRARIES "${LIBEI_INSTALL}\\lib\\ei_static.lib")
 	else()
-		set(LIBERRORINTERCEPTOR_LIBRARIES ${ROOT_BUILD_DIR}/libei/install/lib/libei.a)
+		set(LIBERRORINTERCEPTOR_LIBRARIES ${LIBEI_INSTALL}/lib/libei_static.a)
 	endif()
 
 	ExternalProject_Add(libei
@@ -48,4 +47,4 @@ else (systemlib_LIBEI)
 			-DCMAKE_BUILD_TYPE:STRING=Release
 			-DCMAKE_INSTALL_PREFIX:STRING=${LIBEI_INSTALL}
 	)
-endif (systemlib_LIBEI)
+endif (LIBEI_SYSTEM)

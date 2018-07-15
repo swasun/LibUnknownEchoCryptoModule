@@ -6,10 +6,20 @@
 PROJECT(unknownechocryptomodule C)
 cmake_minimum_required(VERSION 3.8)
 
+
 # --- GLOBAL OPTIONS ---
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 SET(ROOT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "Default root path of the current build directory")
+
+
+# --- DEPENDENCIES OPTIONS ---
+
+SET(LIBEI_SYSTEM FALSE CACHE BOOL "Default LIBEI installation type")
+set(LIBEI_INSTALL ${ROOT_BUILD_DIR}/libei/install CACHE STRING "Default LIBEI install path")
+
+SET(LIBUEUM_SYSTEM FALSE CACHE BOOL "Default LIBUEUM installation type")
+set(LIBUEUM_INSTALL ${ROOT_BUILD_DIR}/libueum/install CACHE STRING "Default LIBUEUM install path")
 
 # --- PATH ---
 
@@ -178,6 +188,7 @@ set(LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR
 	${OPENSSL_INCLUDE_DIR}
 )
 
+
 # --- BUILD UNKNOWNECHOCRYPTOMODULE ---
 
 include_directories(${LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR})
@@ -201,43 +212,20 @@ add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES
 target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${SRC_PATH}")
 set_target_properties(${PROJECT_NAME_STATIC} PROPERTIES OUTPUT_NAME uecm_static)
 
+
 # --- INSTALL ---
 
-if (UNIX)
-    # Copy includes
-    #install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION /usr/include FILES_MATCHING PATTERN "*.h")
+# Copy includes
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h")
 
-    # Copy static library
-    #install (TARGETS ${PROJECT_NAME_STATIC} ARCHIVE DESTINATION "/usr/lib")
+# Copy static library
+install (
+	TARGETS ${PROJECT_NAME_STATIC}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
 
-    # Copy shared library
-	#install (TARGETS ${PROJECT_NAME_SHARED} LIBRARY DESTINATION "/usr/lib")
-	
-	# Copy includes
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h")
-
-	# Copy static library
-	install (
-		TARGETS ${PROJECT_NAME_STATIC}
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-		LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-	)
-
-	#install (
-	#	TARGETS ${PROJECT_NAME_SHARED}
-	#	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-	#)
-elseif (WIN32)
-	# Copy includes
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h")
-
-	# Copy static library
-	install (
-		TARGETS ${PROJECT_NAME_STATIC}
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-		LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-	)
-
+if (WIN32)
 	install (
 		TARGETS ${PROJECT_NAME_SHARED}
 		RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

@@ -17,25 +17,24 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
-if (systemlib_LIBUEUM)
+if (LIBUEUM_SYSTEM)
     if (WIN32)
         set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR "C:\\LibUnknownEchoUtilsModule\\$ENV{name}\\include")
         set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "C:\\LibUnknownEchoUtilsModule\\$ENV{name}\\lib\\ueum_static.lib")
     elseif (UNIX)
         set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "-lueum")
 	endif ()
-else (systemlib_LIUEUM)
+else (LIBUEUM_SYSTEM)
 	include (ExternalProject)
 
 	set(LIBUEUM_URL https://github.com/swasun/LibUnknownEchoUtilsModule.git)
-	set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR ${ROOT_BUILD_DIR}/external/libueum_archive)
+	set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR ${LIBUEUM_INSTALL}/external/libueum_archive)
 	set(LIBUEUM_BUILD ${ROOT_BUILD_DIR}/libueum/src/libueum)
-	set(LIBUEUM_INSTALL ${ROOT_BUILD_DIR}/libueum/install)
 
 	if (WIN32)
-		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${ROOT_BUILD_DIR}\\ueum_static.lib")
+		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "${LIBUEUM_INSTALL}\\lib\\ueum_static.lib")
 	else()
-		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ${ROOT_BUILD_DIR}/libueum/install/lib/libueum.a)
+		set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES ${LIBUEUM_INSTALL}/lib/libueum_static.a)
 	endif()
 
 	ExternalProject_Add(libueum
@@ -49,4 +48,4 @@ else (systemlib_LIUEUM)
 			-DCMAKE_INSTALL_PREFIX:STRING=${LIBUEUM_INSTALL}
 			-DROOT_BUILD_DIR:STRING=${ROOT_BUILD_DIR}
 	)
-endif (systemlib_LIBUEUM)
+endif (LIBUEUM_SYSTEM)
