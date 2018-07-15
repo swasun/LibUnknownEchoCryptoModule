@@ -32,7 +32,7 @@
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
-if (systemlib_ZLIB)
+if (ZLIB_SYSTEM)
     find_package(PkgConfig)
     pkg_search_module(ZLIB REQUIRED zlib)
     set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
@@ -43,7 +43,7 @@ if (systemlib_ZLIB)
     # If we hit this line, zlib is already built and installed to the system.
     add_custom_target(zlib)
 
-else (systemlib_ZLIB)
+else (ZLIB_SYSTEM)
     include (ExternalProject)
 
     set(ZLIB_INCLUDE_DIR ${ROOT_BUILD_DIR}/zlib/install/include)
@@ -86,4 +86,4 @@ else (systemlib_ZLIB)
             -DCMAKE_INSTALL_PREFIX:STRING=${ZLIB_INSTALL}
             -DCMAKE_C_FLAGS:STRING=-fPIC
     )
-endif (systemlib_ZLIB)
+endif (ZLIB_SYSTEM)
