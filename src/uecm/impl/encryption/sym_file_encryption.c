@@ -1,0 +1,162 @@
+#include <uecm/api/encryption/sym_file_encryption.h>
+#include <uecm/impl/errorHandling/openssl_error_handling.h>
+#include <uecm/utils/crypto_random.h>
+#include <ei/ei.h>
+
+#include <openssl/evp.h>
+
+#include <stdio.h>
+
+static bool evp_cipher_file(int should_encrypt, const EVP_CIPHER *cipher, const char *input_file_name, const char *output_file_name,
+    unsigned char *key, unsigned char *iv);
+
+bool uecm_file_encrypt(const char *input_file_name, const char *output_file_name, uecm_sym_key *key, unsigned char **iv, size_t *iv_size) {
+    const EVP_CIPHER *cipher;
+    int iv_length;
+    
+    cipher = EVP_aes_256_cbc();
+    *iv = NULL;
+    iv_length = EVP_CIPHER_iv_length(cipher);
+    *iv_size = (size_t)iv_length;
+
+    ei_logger_debug("Generating crypto random bytes...");
+    if (!uecm_crypto_random_bytes(iv, *iv_size)) {
+        ei_stacktrace_push_msg("Failed to generate crypto random bytes for IV");
+        return false;
+    }
+
+    if (!evp_cipher_file(1, cipher, input_file_name, output_file_name, key->data, *iv)) {
+        ei_stacktrace_push_msg("Failed to process file encryption");
+        ueum_safe_free(*iv);
+        return false;
+    }
+
+    return true;
+}
+
+bool uecm_file_decrypt(const char *input_file_name, const char *output_file_name, uecm_sym_key *key, unsigned char *iv) {
+    const EVP_CIPHER *cipher;
+    
+    cipher = EVP_aes_256_cbc();
+
+    if (!evp_cipher_file(0, cipher, input_file_name, output_file_name, key->data, iv)) {
+        ei_stacktrace_push_msg("Failed to process file decryption");
+        return false;
+    }
+
+    return true;
+}
+
+static bool evp_cipher_file(int should_encrypt, const EVP_CIPHER *cipher, const char *input_file_name, const char *output_file_name,
+    unsigned char *key, unsigned char *iv) {
+
+    bool result;
+    FILE *input_file, *output_file;
+    EVP_CIPHER_CTX *ctx;
+    unsigned short int CHUNK_SIZE;
+    unsigned char *read_chunk, *cipher_chunk;
+    unsigned block_size;
+    int out_len;
+    char *error_buffer;
+    size_t read_size;
+
+    result = false;
+    ctx = NULL;
+    input_file = NULL;
+    output_file = NULL;
+    CHUNK_SIZE = 4096;
+    read_chunk = NULL;
+    cipher_chunk = NULL;
+    error_buffer = NULL;
+
+    ei_logger_debug("Creating new cipher context...");
+    if ((ctx = EVP_CIPHER_CTX_new()) == NULL) {
+        uecm_openssl_error_handling(error_buffer, "Cannot create new cipher context");
+        return false;
+    }
+
+    ei_logger_debug("Opening input file...");
+    if ((input_file = fopen(input_file_name, "rb")) == NULL) {
+        ei_stacktrace_push_errno();
+        goto clean_up;
+    }
+
+    ei_logger_debug("Opening output file...");
+    if ((output_file = fopen(output_file_name, "wb")) == NULL) {
+        ei_stacktrace_push_errno();
+        goto clean_up;
+    }
+
+    ei_logger_debug("Allocating read_chunk...");
+    ueum_safe_alloc_or_goto(read_chunk, unsigned char, CHUNK_SIZE, clean_up);
+
+    ei_logger_debug("Initializing cipher context...");
+    if (!EVP_CipherInit(ctx, cipher, key, iv, should_encrypt)) {
+        uecm_openssl_error_handling(error_buffer, "Cannot init cipher context");
+        goto clean_up;
+    }
+
+    /* Get the block size of the this cipher, depending of the cipher type setted in EVP_CipherInit() */
+    block_size = EVP_CIPHER_CTX_block_size(ctx);
+
+    ei_logger_debug("Allocating cipher chunk...");
+    ueum_safe_alloc_or_goto(cipher_chunk, unsigned char, CHUNK_SIZE + block_size, clean_up);
+
+    /* Read in data in blocks until EOF. Update the ciphering with each read. */
+    while (1) {
+        /* Read a chunk of size CHUNK_SIZE and check if an error occurred */
+        errno = 0;
+        read_size = fread(read_chunk, sizeof(unsigned char), CHUNK_SIZE, input_file);
+        if (errno != 0) {
+            ei_stacktrace_push_msg("Failed to read plain chunk with error message: %s", strerror(errno));
+            goto clean_up;
+        }
+
+        /* Cipher the chunk */
+        if (!EVP_CipherUpdate(ctx, cipher_chunk, &out_len, read_chunk, read_size)) {
+            uecm_openssl_error_handling(error_buffer, "Cannot update cipher context");
+            goto clean_up;
+        }
+
+        /* Write the cipher chunk to the output file and check if an error occurred */
+        errno = 0;
+        fwrite(cipher_chunk, sizeof(unsigned char), out_len, output_file);
+        if (errno != 0) {
+            ei_stacktrace_push_msg("Failed to write cipher chunk with error message: %s", strerror(errno));
+            goto clean_up;
+        }
+
+        /**
+         * If read_size is < CHUNK_SIZE, the input file was complete
+         * encrypted/decrypted. If read_size is equal to 0, then EVP_CipherFinal()
+         * will cipher the remains bytes.
+         */
+        if (read_size < CHUNK_SIZE) {
+            break;
+        }
+    }
+
+    /* Cipher the last chunk */
+    if (!EVP_CipherFinal(ctx, cipher_chunk, &out_len)) {
+        uecm_openssl_error_handling(error_buffer, "Cannot process the last chunk of cipher context");
+        goto clean_up;
+    }
+
+    /* Write the last chunk */
+    errno = 0;
+    fwrite(cipher_chunk, sizeof(unsigned char), out_len, output_file);
+    if (errno != 0) {
+        ei_stacktrace_push_msg("Failed to write the last cipher chunk with error message: %s", strerror(errno));
+        goto clean_up;
+    }
+
+    result = true;
+
+clean_up:
+    ueum_safe_free(read_chunk);
+    ueum_safe_free(cipher_chunk);
+    ueum_safe_fclose(input_file);
+    ueum_safe_fclose(output_file);
+    EVP_CIPHER_CTX_free(ctx);
+    return result;
+}

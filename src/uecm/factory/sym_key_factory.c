@@ -34,7 +34,9 @@ uecm_sym_key *uecm_sym_key_create_random() {
 	size_t buf_size;
 
 	key = NULL;
+	buf = NULL;
 	buf_size = uecm_sym_key_get_min_size();
+	
 	ueum_safe_alloc(buf, unsigned char, buf_size);
 
 	if (!uecm_crypto_random_bytes(buf, buf_size)) {

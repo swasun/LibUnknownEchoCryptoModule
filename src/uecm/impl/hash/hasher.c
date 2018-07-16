@@ -33,12 +33,14 @@ struct uecm_hasher {
 };
 
 uecm_hasher *uecm_hasher_create() {
-	uecm_hasher *h;
+	uecm_hasher *hasher;
 
-	ueum_safe_alloc(h, uecm_hasher, 1);
-	h->md_ctx = NULL;
+	hasher = NULL;
 
-	return h;
+	ueum_safe_alloc(hasher, uecm_hasher, 1);
+	hasher->md_ctx = NULL;
+
+	return hasher;
 }
 
 void uecm_hasher_destroy(uecm_hasher *h) {

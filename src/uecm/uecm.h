@@ -35,6 +35,7 @@
 #include <uecm/api/encoding/base64_decode.h>
 #include <uecm/api/encoding/base64_encode.h>
 #include <uecm/api/encryption/sym_encrypter.h>
+#include <uecm/api/encryption/sym_file_encryption.h>
 #include <uecm/api/errorHandling/crypto_error_handling.h>
 #include <uecm/api/hash/hasher.h>
 #include <uecm/api/key/asym_key.h>

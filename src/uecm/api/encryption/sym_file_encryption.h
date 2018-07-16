@@ -17,53 +17,14 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
+#ifndef UNKNOWNECHOCRYPTOMODULE_SYM_FILE_ENCRYPTION_H
+#define UNKNOWNECHOCRYPTOMODULE_SYM_FILE_ENCRYPTION_H
+
 #include <uecm/api/key/sym_key.h>
-#include <ueum/alloc.h>
-#include <ueum/byte/byte_utility.h>
-#include <ueum/string/string_utility.h>
-#include <ei/ei.h>
+#include <ueum/ueum.h>
 
-#define SYM_KEY_MIN_SIZE 32
+bool uecm_file_encrypt(const char *input_file_name, const char *output_file_name, uecm_sym_key *key, unsigned char **iv, size_t *iv_size);
 
-uecm_sym_key *uecm_sym_key_create(unsigned char *data, size_t size) {
-	uecm_sym_key *key;
+bool uecm_file_decrypt(const char *input_file_name, const char *output_file_name, uecm_sym_key *key, unsigned char *iv);
 
-	key = NULL;
-
-	ei_check_parameter_or_return(data);
-	ei_check_parameter_or_return(size);
-
-	if (size < SYM_KEY_MIN_SIZE) {
-		ei_stacktrace_push_msg("Key size is too short. >= %d is required", SYM_KEY_MIN_SIZE);
-		return NULL;
-	}
-
-	ueum_safe_alloc(key, uecm_sym_key, 1);
-	key->data = ueum_bytes_create_from_bytes(data, size);
-	key->size = size;
-
-	return key;
-}
-
-void uecm_sym_key_destroy(uecm_sym_key *key) {
-	if (key) {
-		ueum_safe_free(key->data);
-		ueum_safe_free(key);
-	}
-}
-
-size_t uecm_sym_key_get_min_size() {
-	return SYM_KEY_MIN_SIZE;
-}
-
-bool uecm_sym_key_is_valid(uecm_sym_key *key) {
-	ei_check_parameter_or_return(key);
-	ei_check_parameter_or_return(key->data);
-
-	if (key->size < SYM_KEY_MIN_SIZE) {
-		ei_stacktrace_push_msg("Key size is too short. >= %d is required", SYM_KEY_MIN_SIZE);
-		return false;
-	}
-
-	return true;
-}
+#endif
