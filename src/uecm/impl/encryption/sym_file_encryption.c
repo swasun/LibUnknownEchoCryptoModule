@@ -26,7 +26,6 @@ bool uecm_file_encrypt(const char *input_file_name, const char *output_file_name
     temp_iv = NULL;
     ei_safe_alloc(temp_iv, unsigned char, *iv_size);
 
-    ei_logger_debug("Generating crypto random bytes...");
     if (!uecm_crypto_random_bytes(temp_iv, *iv_size)) {
         ei_stacktrace_push_msg("Failed to generate crypto random bytes for IV");
         ei_safe_free(temp_iv);
@@ -90,28 +89,23 @@ static bool evp_cipher_file(int should_encrypt, const EVP_CIPHER *cipher, const 
     cipher_chunk = NULL;
     error_buffer = NULL;
 
-    ei_logger_debug("Creating new cipher context...");
     if ((ctx = EVP_CIPHER_CTX_new()) == NULL) {
         uecm_openssl_error_handling(error_buffer, "Cannot create new cipher context");
         return false;
     }
 
-    ei_logger_debug("Opening input file...");
     if ((input_file = fopen(input_file_name, "rb")) == NULL) {
         ei_stacktrace_push_errno();
         goto clean_up;
     }
 
-    ei_logger_debug("Opening output file...");
     if ((output_file = fopen(output_file_name, "wb")) == NULL) {
         ei_stacktrace_push_errno();
         goto clean_up;
     }
 
-    ei_logger_debug("Allocating read_chunk...");
     ueum_safe_alloc_or_goto(read_chunk, unsigned char, CHUNK_SIZE, clean_up);
 
-    ei_logger_debug("Initializing cipher context...");
     if (!EVP_CipherInit(ctx, cipher, key, iv, should_encrypt)) {
         uecm_openssl_error_handling(error_buffer, "Cannot init cipher context");
         goto clean_up;
@@ -120,7 +114,6 @@ static bool evp_cipher_file(int should_encrypt, const EVP_CIPHER *cipher, const 
     /* Get the block size of the this cipher, depending of the cipher type setted in EVP_CipherInit() */
     block_size = EVP_CIPHER_CTX_block_size(ctx);
 
-    ei_logger_debug("Allocating cipher chunk...");
     ueum_safe_alloc_or_goto(cipher_chunk, unsigned char, CHUNK_SIZE + block_size, clean_up);
 
     /* Read in data in blocks until EOF. Update the ciphering with each read. */
