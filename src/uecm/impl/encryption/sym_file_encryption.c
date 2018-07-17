@@ -13,23 +13,33 @@ static bool evp_cipher_file(int should_encrypt, const EVP_CIPHER *cipher, const 
 bool uecm_file_encrypt(const char *input_file_name, const char *output_file_name, uecm_sym_key *key, unsigned char **iv, size_t *iv_size) {
     const EVP_CIPHER *cipher;
     int iv_length;
+    unsigned char *temp_iv;
     
+    if (!uecm_sym_key_is_valid(key)) {
+        ei_stacktrace_push_msg("Specified sym key isn't valid");
+        return false;
+    }
+
     cipher = EVP_aes_256_cbc();
-    *iv = NULL;
     iv_length = EVP_CIPHER_iv_length(cipher);
     *iv_size = (size_t)iv_length;
+    temp_iv = NULL;
+    ei_safe_alloc(temp_iv, unsigned char, *iv_size);
 
     ei_logger_debug("Generating crypto random bytes...");
-    if (!uecm_crypto_random_bytes(iv, *iv_size)) {
+    if (!uecm_crypto_random_bytes(temp_iv, *iv_size)) {
         ei_stacktrace_push_msg("Failed to generate crypto random bytes for IV");
+        ei_safe_free(temp_iv);
         return false;
     }
 
-    if (!evp_cipher_file(1, cipher, input_file_name, output_file_name, key->data, *iv)) {
+    if (!evp_cipher_file(1, cipher, input_file_name, output_file_name, key->data, temp_iv)) {
         ei_stacktrace_push_msg("Failed to process file encryption");
-        ueum_safe_free(*iv);
+        ueum_safe_free(temp_iv);
         return false;
     }
+
+    *iv = temp_iv;
 
     return true;
 }
@@ -37,6 +47,11 @@ bool uecm_file_encrypt(const char *input_file_name, const char *output_file_name
 bool uecm_file_decrypt(const char *input_file_name, const char *output_file_name, uecm_sym_key *key, unsigned char *iv) {
     const EVP_CIPHER *cipher;
     
+    if (!uecm_sym_key_is_valid(key)) {
+        ei_stacktrace_push_msg("Specified sym key isn't valid");
+        return false;
+    }
+
     cipher = EVP_aes_256_cbc();
 
     if (!evp_cipher_file(0, cipher, input_file_name, output_file_name, key->data, iv)) {
@@ -59,6 +74,12 @@ static bool evp_cipher_file(int should_encrypt, const EVP_CIPHER *cipher, const 
     int out_len;
     char *error_buffer;
     size_t read_size;
+
+    ei_check_parameter_or_return(cipher);
+    ei_check_parameter_or_return(input_file_name);
+    ei_check_parameter_or_return(output_file_name);
+    ei_check_parameter_or_return(key);
+    ei_check_parameter_or_return(iv);
 
     result = false;
     ctx = NULL;

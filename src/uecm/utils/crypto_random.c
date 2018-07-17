@@ -124,6 +124,9 @@ bool uecm_crypto_random_bytes(unsigned char *buffer, size_t buffer_length) {
     int attempts;
     char *error_buffer;
 
+    ei_check_parameter_or_return(buffer)
+    ei_check_parameter_or_return(buffer_length > 0)
+
 	if (buffer_length > UINT_MAX) {
 		ei_stacktrace_push_msg("RAND_bytes() need a length in int, however buffer_length is > UINT_MAX");
 		return false;
