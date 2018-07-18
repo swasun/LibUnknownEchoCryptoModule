@@ -95,6 +95,8 @@ int main(int argc, char **argv) {
 
     exit_code = EXIT_SUCCESS;
 
+    ei_logger_info("Succeed !");
+
 clean_up:
     if (ei_stacktrace_is_filled()) {
         ei_logger_error("An error occurred with the following stacktrace :");

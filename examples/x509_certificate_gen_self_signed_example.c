@@ -23,6 +23,10 @@
 
 #include <stdio.h>
 
+#define CERTIFICATE_PATH "out/cert.pem"
+#define PRIVATE_KEY_PATH "out/key.pem"
+#define CN               "SWA"
+
 int main() {
     uecm_x509_certificate *certificate;
     uecm_private_key *private_key;
@@ -40,17 +44,23 @@ int main() {
     }
     ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
-    if (!uecm_x509_certificate_generate_self_signed_ca("SWA", &certificate, &private_key)) {
+    ei_logger_debug("CERTIFICATE_PATH=%s", CERTIFICATE_PATH);
+    ei_logger_debug("PRIVATE_KEY_PATH=%s", PRIVATE_KEY_PATH);
+    ei_logger_debug("CN=%s", CN);
+
+    ei_logger_info("Generating self signed x509 certificate and private key...");
+    if (!uecm_x509_certificate_generate_self_signed_ca(CN, &certificate, &private_key)) {
         ei_logger_error("Failed to generate self signed CA");
         goto clean_up;
     }
 
-    if (!uecm_x509_certificate_print_pair(certificate, private_key, "out/cert.pem", "out/key.pem", NULL)) {
+    ei_logger_info("Writing to file self signed x509 certificate and private key...");
+    if (!uecm_x509_certificate_print_pair(certificate, private_key, CERTIFICATE_PATH, PRIVATE_KEY_PATH, NULL)) {
         ei_logger_error("Failed to print ca certificate and private key to files");
         goto clean_up;
     }
 
-	ei_logger_info("Succeed");
+	ei_logger_info("Succeed !");
 
 clean_up:
 	if (ei_stacktrace_is_filled()) {

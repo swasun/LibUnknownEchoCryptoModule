@@ -88,6 +88,8 @@ int main(int argc, char **argv) {
 
     exit_code = EXIT_SUCCESS;
 
+    ei_logger_info("Succeed !");
+
 clean_up:
     ueum_safe_free(message)
     ueum_safe_free(compressed)

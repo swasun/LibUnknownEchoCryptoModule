@@ -86,7 +86,7 @@ int main() {
         goto clean_up;
     }
 
-	ei_logger_info("Succeed");
+	ei_logger_info("Succeed !");
 
 clean_up:
 	if (ei_stacktrace_is_filled()) {

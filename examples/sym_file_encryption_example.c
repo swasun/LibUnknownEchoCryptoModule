@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     }
     ei_logger_info("File decrypted as file %s", plain_file_name);
 
-	ei_logger_info("Succeed");
+	ei_logger_info("Succeed !");
 
 clean_up:
 	if (ei_stacktrace_is_filled()) {

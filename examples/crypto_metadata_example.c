@@ -61,6 +61,8 @@ int main() {
     }
     ei_logger_info("Successfully read our crypto metadata");
 
+    ei_logger_info("Succeed !");
+
 clean_up:
     uecm_crypto_metadata_destroy_all(our_crypto_metadata);
     uecm_crypto_metadata_destroy_all(read_crypto_metadata);
