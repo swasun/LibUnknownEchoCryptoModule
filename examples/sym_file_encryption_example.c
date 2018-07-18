@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 
 clean_up:
 	if (ei_stacktrace_is_filled()) {
-		ei_logger_error("Error(s) occurred with the following stacktrace(s) :");
+		ei_logger_error("Error(s) occurred with the following stacktrace(s):");
 		ei_stacktrace_print_all();
 	}
     uecm_sym_key_destroy(key);

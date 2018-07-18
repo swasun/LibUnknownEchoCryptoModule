@@ -64,7 +64,7 @@ int main() {
 
 clean_up:
 	if (ei_stacktrace_is_filled()) {
-		ei_logger_error("Error(s) occurred with the following stacktrace(s) :");
+		ei_logger_error("Error(s) occurred with the following stacktrace(s):");
 		ei_stacktrace_print_all();
 	}
     uecm_x509_certificate_destroy(certificate);

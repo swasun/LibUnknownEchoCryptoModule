@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 clean_up:
     uecm_pkcs12_keystore_destroy(keystore);
     if (ei_stacktrace_is_filled()) {
-        ei_logger_error("Error(s) occurred with the following stacktrace(s) :");
+        ei_logger_error("Error(s) occurred with the following stacktrace(s):");
         ei_stacktrace_print_all();
     }
     uecm_uninit();

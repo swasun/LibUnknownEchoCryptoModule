@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 
 clean_up:
     if (ei_stacktrace_is_filled()) {
-        ei_logger_error("An error occurred with the following stacktrace :");
+        ei_logger_error("Error(s) occurred with the following stacktrace(s):");
         ei_stacktrace_print_all();
     }
     ueum_safe_free(message)

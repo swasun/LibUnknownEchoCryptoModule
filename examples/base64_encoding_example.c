@@ -21,9 +21,10 @@
 #include <ueum/ueum.h>
 #include <ei/ei.h>
 
-#include <stdlib.h>
+#include <stdio.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
 
 static void print_usage(char *name) {
     printf("%s <data>\n", name);
@@ -31,18 +32,15 @@ static void print_usage(char *name) {
 
 int main(int argc, char **argv) {
     int exit_code;
-    uecm_signer *signer;
-    unsigned char *signature, *message;
-    size_t signature_length, message_length;
-    uecm_asym_key *akey;
+    unsigned char *message, *encoded, *decoded;
+    size_t message_length, encoded_length, decoded_length;
 
     exit_code = EXIT_FAILURE;
-	signature = NULL;
-	message = NULL;
-    signer = NULL;
-    akey = NULL;
+    message = NULL;
+    encoded = NULL;
+    decoded = NULL;
 
-    if (argc != 2) {
+    if (argc == 1) {
         fprintf(stderr, "[FATAL] An argument is required.\n");
         print_usage(argv[0]);
         exit(EXIT_FAILURE);
@@ -51,7 +49,7 @@ int main(int argc, char **argv) {
 	ei_init_or_die();
     ei_logger_use_symbol_levels();
 
-	ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
+    ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
     if (!uecm_init()) {
 		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
 		goto clean_up;
@@ -60,53 +58,46 @@ int main(int argc, char **argv) {
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
     if ((message = ueum_bytes_create_from_string(argv[1])) == NULL) {
-        ei_stacktrace_push_msg("Failed to convert arg to bytes");
+        ei_stacktrace_push_msg("Failed to convert arg to bytes")
         goto clean_up;
     }
+    message_length = strlen(argv[1]);
     ei_logger_info("Succefully converted parameter to bytes");
 
-    message_length = strlen(argv[1]);
+    ei_logger_info("Encoding message with base64...");
+    if ((encoded = uecm_base64_encode(message, message_length, &encoded_length)) == NULL) {
+        ei_stacktrace_push_msg("Failed to encod message")
+        goto clean_up;
+    }
+    ei_logger_info("Message has been successfully encoded");
 
-    if ((akey = uecm_rsa_asym_key_create(2048)) == NULL) {
-        ei_stacktrace_push_msg("Failed to create RSA key pair of 2048 bits");
+    ei_logger_info("Decoding message with base64...");
+    if ((decoded = uecm_base64_decode(encoded, encoded_length, &decoded_length)) == NULL) {
+        ei_stacktrace_push_msg("Failed to decode message")
         goto clean_up;
     }
 
-    ei_logger_info("Creating RSA signer using the previous generated key pair...");
-    if ((signer = uecm_rsa_signer_create_default_from_pair(akey)) == NULL) {
-        ei_stacktrace_push_msg("Failed to create new RSA signer");
-        goto clean_up;
-    }
-
-    ei_logger_info("Signing input message with RSA signer instance...");
-    if (!uecm_signer_sign_buffer(signer, message, message_length, &signature, &signature_length)) {
-        ei_stacktrace_push_msg("Failed to sign message");
-        goto clean_up;
-    }
-    ei_logger_info("Message has been successfully signed");
-
-    ei_logger_info("Verifying signature...");
-    if ((uecm_signer_verify_buffer(signer, message, message_length, signature, signature_length))) {
-        ei_logger_info("Signature matched with previous message");
+    ei_logger_info("Messages comparaison...");
+    if (memcmp(decoded, message, message_length) == 0) {
+        ei_logger_info("Message has been successfully decoded");
     } else {
-        ei_logger_error("Signature doesn't matched with previous message");
-        ei_stacktrace_push_msg("Signature and buffer doesn't matched");
+        ei_logger_error("The message was decoded but isn't the same as the original");
+        ei_stacktrace_push_msg("Failed to decode message")
         goto clean_up;
     }
-
-    ei_logger_info("Succeed !");
 
     exit_code = EXIT_SUCCESS;
 
+    ei_logger_info("Succeed !");
+
 clean_up:
+    ueum_safe_free(message)
+    ueum_safe_free(encoded)
+    ueum_safe_free(decoded)
     if (ei_stacktrace_is_filled()) {
         ei_logger_error("Error(s) occurred with the following stacktrace(s):");
         ei_stacktrace_print_all();
     }
-    ueum_safe_free(message);
-    ueum_safe_free(signature);
-    uecm_signer_destroy(signer);
-    uecm_asym_key_destroy_all(akey);
     uecm_uninit();
 	ei_uninit();
     return exit_code;
