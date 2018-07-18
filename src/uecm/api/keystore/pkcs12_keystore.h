@@ -64,4 +64,6 @@ uecm_x509_certificate *uecm_pkcs12_keystore_find_certificate_by_friendly_name(ue
 
 bool uecm_pkcs12_keystore_write(uecm_pkcs12_keystore *keystore, const char *file_name, const char *passphrase);
 
+bool uecm_pkcs12_keystore_print(uecm_pkcs12_keystore *keystore, const char *passphrase);
+
 #endif

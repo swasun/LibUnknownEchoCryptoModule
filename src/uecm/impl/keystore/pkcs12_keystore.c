@@ -378,6 +378,36 @@ clean_up:
     return result;
 }
 
+bool uecm_pkcs12_keystore_print(uecm_pkcs12_keystore *keystore, const char *passphrase) {
+    int i;
+
+    ei_check_parameter_or_return(keystore);
+    ei_check_parameter_or_return(passphrase);
+
+    ei_logger_debug("Main certificate:");
+    if (!uecm_x509_certificate_print(keystore->certificate, stdout)) {
+        ei_stacktrace_push_msg("Failed to print main certificate to stdout");
+        return false;
+    }
+
+    ei_logger_debug("Other certificates:");
+    for (i = 0; i < keystore->other_certificates_number; i++) {
+        ei_logger_debug("#%d:", i);
+        if (!uecm_x509_certificate_print(keystore->other_certificates[i], stdout)) {
+            ei_stacktrace_push_msg("Failed to print certificate #%d to stdout", i);
+            return false;
+        }
+    }
+
+    ei_logger_debug("Private key:");
+    if (!uecm_private_key_print(keystore->private_key, stdout, passphrase)) {
+        ei_stacktrace_push_msg("Failed to print private key to stdout");
+        return false;
+    }
+
+    return true;
+}
+
 static bool load_certs_keys_p12(uecm_pkcs12_keystore *keystore, const PKCS12 *p12, const char *passphrase,
     int passphrase_len, const EVP_CIPHER *enc) {
 

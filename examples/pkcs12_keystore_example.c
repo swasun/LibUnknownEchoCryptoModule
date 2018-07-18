@@ -22,15 +22,20 @@
 #include <ei/ei.h>
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 int main(int argc, char **argv) {
     uecm_pkcs12_keystore *keystore;
+    const char *keystore_path;
 
 	keystore = NULL;
+    keystore_path = "out/keystore.p12";
 
-    if (argc != 3) {
-        fprintf(stderr, "[ERROR] ./%s <file_path> <passphrase>\n", argv[0]);
-        exit(1);
+    if (argc != 2) {
+        fprintf(stderr, "[ERROR] ./%s <passphrase>\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
 
 	ei_init_or_die();
@@ -43,15 +48,40 @@ int main(int argc, char **argv) {
     }
     ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
-    if ((keystore = uecm_pkcs12_keystore_load(argv[1], argv[2])) == NULL) {
-        ei_stacktrace_push_msg("Failed to load specified pkcs12 keystore");
-        goto clean_up;
+    ei_logger_info("Checking if %s exist...", keystore_path);
+    if (!ueum_is_file_exists(keystore_path)) {
+        ei_logger_info("%s doesn't exist. Generating random pkcs12 keystore with CN=SWA and friendly name=test...", keystore_path);
+        keystore = uecm_pkcs12_keystore_create_random("SWA", "test");
+        if (!uecm_pkcs12_keystore_write(keystore, keystore_path, argv[1])) {
+            ei_stacktrace_push_msg("Failed to write keystore to 'out/keystore.p12'");
+            goto clean_up;
+        }
+    } else {
+        ei_logger_info("Loading pkcs12 keystore %s...", keystore_path);
+        if ((keystore = uecm_pkcs12_keystore_load(keystore_path, argv[1])) == NULL) {
+            ei_stacktrace_push_msg("Failed to load specified pkcs12 keystore");
+            goto clean_up;
+        }
+
+        /**
+         * Print the plain content of pkcs12 keystore on stdout.
+         * Only for debugging purpose.
+         */
+        ei_logger_info("Print plain content of pkcs12 keystore %s to stdout...", keystore_path);
+        if (!uecm_pkcs12_keystore_print(keystore, argv[1])) {
+            ei_stacktrace_push_msg("Failed to print plain content keystore to stdout");
+            goto clean_up;
+        }
+
+        ei_logger_info("Removing %s...", keystore_path);
+        errno = 0;
+        if (remove(keystore_path) != 0) {
+            ei_stacktrace_push_msg("Failed to remove %s with error message: %s", keystore_path, strerror(errno));
+            goto clean_up;
+        }
     }
 
-    if (!uecm_pkcs12_keystore_write(keystore, "out/keystore.p12", argv[2])) {
-        ei_stacktrace_push_msg("Failed to write keystore to 'out/keystore.p12'");
-        goto clean_up;
-    }
+    ei_logger_info("Succeed !");
 
 clean_up:
     uecm_pkcs12_keystore_destroy(keystore);
