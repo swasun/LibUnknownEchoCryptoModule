@@ -62,14 +62,16 @@ int main(int argc, char **argv) {
         goto clean_up;
     }
     message_length = strlen(argv[1]);
-    ei_logger_info("Succefully converted parameter to bytes");
+    ei_logger_info("Succefully converted parameter to bytes:");
+    ueum_hex_print(message, message_length, stdout);
 
     ei_logger_info("Encoding message with base64...");
     if ((encoded = uecm_base64_encode(message, message_length, &encoded_length)) == NULL) {
         ei_stacktrace_push_msg("Failed to encod message")
         goto clean_up;
     }
-    ei_logger_info("Message has been successfully encoded");
+    ei_logger_info("Message has been successfully encoded:");
+    ueum_hex_print(encoded, encoded_length, stdout);
 
     ei_logger_info("Decoding message with base64...");
     if ((decoded = uecm_base64_decode(encoded, encoded_length, &decoded_length)) == NULL) {
@@ -78,13 +80,14 @@ int main(int argc, char **argv) {
     }
 
     ei_logger_info("Messages comparaison...");
-    if (memcmp(decoded, message, message_length) == 0) {
-        ei_logger_info("Message has been successfully decoded");
-    } else {
+    if (memcmp(decoded, message, message_length) != 0) {
         ei_logger_error("The message was decoded but isn't the same as the original");
         ei_stacktrace_push_msg("Failed to decode message")
         goto clean_up;
     }
+
+    ei_logger_info("Message has been successfully decoded:");
+    ueum_hex_print(decoded, decoded_length, stdout);
 
     exit_code = EXIT_SUCCESS;
 
