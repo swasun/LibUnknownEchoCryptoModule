@@ -43,6 +43,7 @@ bool uecm_deflate_compress(unsigned char *plaintext, size_t plaintext_len, unsig
 
 	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     len = compressBound((uLong)plaintext_len);
+    compr = NULL;
     tmp_compr_len = len;
 
     ueum_safe_alloc(compr, Byte, len);
@@ -71,6 +72,7 @@ bool uecm_inflate_decompress(unsigned char *compressed_text, size_t compressed_l
 
 	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     tmp_decompr_len = (uLong)decompressed_len;
+    decompr = NULL;
     ueum_safe_alloc(decompr, Byte, tmp_decompr_len);
 
 	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */

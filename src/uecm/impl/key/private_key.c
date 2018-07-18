@@ -53,6 +53,8 @@ uecm_private_key *uecm_private_key_create_from_impl(void *impl) {
 uecm_private_key *uecm_private_key_create(uecm_private_key_type key_type, void *impl, int bits) {
 	uecm_private_key *sk;
 
+	sk = NULL;
+
 	ueum_safe_alloc(sk, uecm_private_key, 1);
 
 	sk->impl = EVP_PKEY_new();

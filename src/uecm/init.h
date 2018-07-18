@@ -27,7 +27,16 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_INIT_H
 #define UNKNOWNECHOCRYPTOMODULE_INIT_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 int uecm_init();
+
+#define uecm_init_or_die() \
+    if (!uecm_init()) { \
+        fprintf(stderr, "[FATAL] Failed to initialize LibUnknownEchoCryptoModule"); \
+        exit(EXIT_FAILURE); \
+    } \
 
 void uecm_uninit();
 

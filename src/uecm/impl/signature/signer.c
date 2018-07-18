@@ -36,6 +36,8 @@ struct uecm_signer {
 uecm_signer *uecm_signer_create(const char *digest_name) {
 	uecm_signer *signer;
 
+	signer = NULL;
+
 	ueum_safe_alloc(signer, uecm_signer, 1);
 	signer->public_key = NULL;
 	signer->private_key = NULL;

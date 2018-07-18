@@ -36,6 +36,8 @@ struct uecm_public_key {
 uecm_public_key *uecm_public_key_create(uecm_public_key_type key_type, void *impl, int bits) {
 	uecm_public_key *pk;
 
+	pk = NULL;
+
 	ueum_safe_alloc(pk, uecm_public_key, 1);
 
 	pk->impl = EVP_PKEY_new();

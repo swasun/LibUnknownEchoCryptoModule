@@ -24,6 +24,8 @@
 uecm_asym_key *uecm_asym_key_create(uecm_public_key *pk, uecm_private_key *sk) {
 	uecm_asym_key *akey;
 
+	akey = NULL;
+
 	ueum_safe_alloc(akey, uecm_asym_key, 1)
 	akey->pk = pk;
 	akey->sk = sk;
