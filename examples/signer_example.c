@@ -31,7 +31,7 @@ static void print_usage(char *name) {
 
 int main(int argc, char **argv) {
     int exit_code;
-    uecm_signer *s;
+    uecm_signer *signer;
     unsigned char *signature, *message;
     size_t signature_length, message_length;
     uecm_asym_key *akey;
@@ -39,10 +39,10 @@ int main(int argc, char **argv) {
     exit_code = EXIT_FAILURE;
 	signature = NULL;
 	message = NULL;
-    s = NULL;
+    signer = NULL;
     akey = NULL;
 
-    if (argc == 1) {
+    if (argc != 2) {
         fprintf(stderr, "[FATAL] An argument is required.\n");
         print_usage(argv[0]);
         exit(EXIT_FAILURE);
@@ -60,37 +60,41 @@ int main(int argc, char **argv) {
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
     if ((message = ueum_bytes_create_from_string(argv[1])) == NULL) {
-        ei_stacktrace_push_msg("Failed to convert arg to bytes")
+        ei_stacktrace_push_msg("Failed to convert arg to bytes");
         goto clean_up;
     }
     ei_logger_info("Succefully converted parameter to bytes");
 
     message_length = strlen(argv[1]);
 
-    akey = uecm_rsa_asym_key_create(2048);
-
-    ei_logger_info("Creating rsa uecm_signer with random asym key of 2048 bits...");
-    if ((s = uecm_rsa_signer_create_default_from_pair(akey)) == NULL) {
-        ei_stacktrace_push_msg("Failed to create rsa uecm_signer with random asym key")
+    if ((akey = uecm_rsa_asym_key_create(2048)) == NULL) {
+        ei_stacktrace_push_msg("Failed to create RSA key pair of 2048 bits");
         goto clean_up;
     }
-    ei_logger_info("Rsa uecm_signer has been successfully created");
 
-    ei_logger_info("Signing message with rsa uecm_signer instance...");
-    if (!uecm_signer_sign_buffer(s, message, message_length, &signature, &signature_length)) {
-        ei_stacktrace_push_msg("Failed to sign message")
+    ei_logger_info("Creating RSA signer using the previous generated key pair...");
+    if ((signer = uecm_rsa_signer_create_default_from_pair(akey)) == NULL) {
+        ei_stacktrace_push_msg("Failed to create new RSA signer");
         goto clean_up;
     }
-    ei_logger_info("Message successfully signed");
+
+    ei_logger_info("Signing input message with RSA signer instance...");
+    if (!uecm_signer_sign_buffer(signer, message, message_length, &signature, &signature_length)) {
+        ei_stacktrace_push_msg("Failed to sign message");
+        goto clean_up;
+    }
+    ei_logger_info("Message has been successfully signed");
 
     ei_logger_info("Verifying signature...");
-    if ((uecm_signer_verify_buffer(s, message, message_length, signature, signature_length))) {
+    if ((uecm_signer_verify_buffer(signer, message, message_length, signature, signature_length))) {
         ei_logger_info("Signature matched with previous message");
     } else {
         ei_logger_error("Signature doesn't matched with previous message");
-        ei_stacktrace_push_msg("Signature and buffer doesn't matched")
+        ei_stacktrace_push_msg("Signature and buffer doesn't matched");
         goto clean_up;
     }
+
+    ei_logger_info("Succeed !");
 
     exit_code = EXIT_SUCCESS;
 
@@ -101,7 +105,7 @@ clean_up:
     }
     ueum_safe_free(message);
     ueum_safe_free(signature);
-    uecm_signer_destroy(s);
+    uecm_signer_destroy(signer);
     uecm_asym_key_destroy_all(akey);
     uecm_uninit();
 	ei_uninit();
