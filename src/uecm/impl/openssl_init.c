@@ -74,6 +74,7 @@ static bool alloc_mutexes() {
     int i, total;
 
     total = CRYPTO_num_locks();
+	mutex_buf = NULL;
 
     #if defined(_WIN32) || defined(_WIN64)
     	ueum_safe_alloc(mutex_buf, CRITICAL_SECTION, total);

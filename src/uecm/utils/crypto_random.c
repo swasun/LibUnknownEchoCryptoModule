@@ -39,9 +39,11 @@
 /**
  * source : https://stackoverflow.com/questions/8541396/data-types-conversion-unsigned-long-long-to-char
  */
-unsigned char *ut_byte_to_long(unsigned long long nb) {
+unsigned char *uecm_byte_to_long(unsigned long long nb) {
     unsigned char *buf;
     int i, j;
+
+    buf = NULL;
 
     ueum_safe_alloc(buf, unsigned char, 22);
     i = 21;
@@ -102,7 +104,7 @@ bool uecm_crypto_random_seed_prng() {
             #endif
 
             if (seed_needed) {
-                seed = ut_byte_to_long(ueum_processor_timestamp());
+                seed = uecm_byte_to_long(ueum_processor_timestamp());
                 ueum_safe_realloc(seed, unsigned char, 22, 16);
                 RAND_seed(seed, 16);
                 ueum_safe_free(seed);

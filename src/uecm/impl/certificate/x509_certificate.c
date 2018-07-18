@@ -45,6 +45,8 @@ static bool load_certificate_pair(const char *cert_file_name, const char *privat
 uecm_x509_certificate *uecm_x509_certificate_create_empty() {
 	uecm_x509_certificate *certificate;
 
+	certificate = NULL;
+
 	ueum_safe_alloc(certificate, uecm_x509_certificate, 1);
 	certificate->impl = NULL;
 

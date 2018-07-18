@@ -37,6 +37,8 @@ uecm_sym_encrypter *uecm_sym_encrypter_create(const char *cipher_name) {
 	uecm_sym_encrypter *encrypter;
 	char *error_buffer;
 
+	encrypter = NULL;
+
 	ueum_safe_alloc(encrypter, uecm_sym_encrypter, 1);
 	encrypter->key = NULL;
 	if ((encrypter->cipher = EVP_get_cipherbyname(cipher_name)) == NULL) {
@@ -112,6 +114,7 @@ bool uecm_sym_encrypter_encrypt(uecm_sym_encrypter *encrypter, unsigned char *pl
 		return false;
 	}
 
+	*ciphertext = NULL;
 	ueum_safe_alloc(*ciphertext, unsigned char, plaintext_size + uecm_sym_encrypter_get_iv_size(encrypter));
 
 	/* It's safe to cast plaintext_size to int as we compare it with UINT_MAX */
@@ -161,6 +164,7 @@ bool uecm_sym_encrypter_decrypt(uecm_sym_encrypter *encrypter, unsigned char *ci
 		return false;
 	}
 
+	*plaintext = NULL;
 	ueum_safe_alloc(*plaintext, unsigned char, ciphertext_size + uecm_sym_encrypter_get_iv_size(encrypter));
 
 	/* It's safe to cast ciphertext_size to int as we compare it with INT_MAX */

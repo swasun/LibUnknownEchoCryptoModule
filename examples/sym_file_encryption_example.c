@@ -33,10 +33,12 @@ int main(int argc, char **argv) {
     ei_init_or_die();
     ei_logger_use_symbol_levels();
 
+    ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
     if (!uecm_init()) {
-		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
-		exit(1);
-	}
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
+		goto clean_up;
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
     key = NULL;
     iv = NULL;

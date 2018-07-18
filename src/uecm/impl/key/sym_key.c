@@ -28,8 +28,6 @@
 uecm_sym_key *uecm_sym_key_create(unsigned char *data, size_t size) {
 	uecm_sym_key *key;
 
-	key = NULL;
-
 	ei_check_parameter_or_return(data);
 	ei_check_parameter_or_return(size);
 
@@ -37,6 +35,8 @@ uecm_sym_key *uecm_sym_key_create(unsigned char *data, size_t size) {
 		ei_stacktrace_push_msg("Key size is too short. >= %d is required", SYM_KEY_MIN_SIZE);
 		return NULL;
 	}
+
+	key = NULL;
 
 	ueum_safe_alloc(key, uecm_sym_key, 1);
 	key->data = ueum_bytes_create_from_bytes(data, size);

@@ -17,32 +17,21 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
-#include <uecm/init.h>
-#include <ueum/bool.h>
-#include <uecm/api/key/public_key.h>
-#include <uecm/api/key/private_key.h>
-#include <uecm/api/key/asym_key.h>
-#include <uecm/api/certificate/x509_certificate.h>
-#include <uecm/api/cipher/data_cipher.h>
-#include <uecm/factory/rsa_asym_key_factory.h>
-#include <ueum/alloc.h>
+#include <uecm/uecm.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
-#include <ueum/byte/byte_utility.h>
 
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
 
-#define CIPHER_ID   1
-#define DECIPHER_ID 2
-
-void print_usage(char *name) {
-    printf("%s <data> <public_key> <private_key>\n", name);
+static void print_usage(char *name) {
+    printf("%s <data> <cert_path> <key_path>\n", name);
 }
 
 int main(int argc, char **argv) {
     unsigned char *plain_data, *cipher_data, *decipher_data;
-    size_t plain_data_size, cipher_data_size, decipher_data_size/*, i*/;
+    size_t plain_data_size, cipher_data_size, decipher_data_size;
     uecm_x509_certificate *certificate;
     uecm_public_key *public_key;
     uecm_private_key *private_key;
@@ -62,12 +51,15 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-	ei_init();
+	ei_init_or_die();
+    ei_logger_use_symbol_levels();
 
-	if (!uecm_init()) {
-		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
+	ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
+    if (!uecm_init()) {
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
 		goto clean_up;
-	}
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
     if ((plain_data = ueum_bytes_create_from_string(argv[1])) == NULL) {
         ei_stacktrace_push_msg("Failed to convert arg to bytes")

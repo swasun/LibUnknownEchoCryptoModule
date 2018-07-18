@@ -30,9 +30,16 @@ int main(int argc, char **argv) {
     uecm_asym_key *key;
     int key_size;
 
-    ei_init_or_die(); /* Initialize LibErrorInterceptor */
+    /* Initialize LibErrorInterceptor */
+    ei_init_or_die();
+    ei_logger_use_symbol_levels();
 
-    uecm_init_or_die();  /* Initialize LibUnknownEchoCryptoModule */
+    /* Initialize LibUnknownEchoCryptoModule */
+    if (!uecm_init()) {
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
+		goto clean_up;
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
     /* Use LibUnknownEchoCryptoModule */
 

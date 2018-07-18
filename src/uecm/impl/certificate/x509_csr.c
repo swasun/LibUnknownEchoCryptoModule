@@ -123,6 +123,7 @@ uecm_x509_csr *uecm_x509_string_to_csr(char *string) {
 
 	ei_check_parameter_or_return(string);
 
+    csr = NULL;
 	string_size = strlen(string);
 
 	if (string_size > INT_MAX) {
@@ -162,6 +163,7 @@ uecm_x509_csr *uecm_x509_bytes_to_csr(unsigned char *data, size_t data_size) {
 		return NULL;
 	}
 
+    csr = NULL;
     ueum_safe_alloc(csr, uecm_x509_csr, 1)
     bio = NULL;
     error_buffer = NULL;

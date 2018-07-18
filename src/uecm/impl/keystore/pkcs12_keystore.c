@@ -51,6 +51,8 @@ typedef struct pw_cb_data {
 static uecm_pkcs12_keystore *uecm_pkcs12_keystore_create_empty() {
     uecm_pkcs12_keystore *keystore;
 
+    keystore = NULL;
+
     ueum_safe_alloc(keystore, uecm_pkcs12_keystore, 1)
     keystore->certificate = NULL;
     keystore->private_key = NULL;
@@ -63,6 +65,8 @@ static uecm_pkcs12_keystore *uecm_pkcs12_keystore_create_empty() {
 
 uecm_pkcs12_keystore *uecm_pkcs12_keystore_create(uecm_x509_certificate *certificate, uecm_private_key *private_key, const char *friendly_name) {
     uecm_pkcs12_keystore *keystore;
+
+    keystore = NULL;
 
     ueum_safe_alloc(keystore, uecm_pkcs12_keystore, 1)
     keystore->certificate = certificate;

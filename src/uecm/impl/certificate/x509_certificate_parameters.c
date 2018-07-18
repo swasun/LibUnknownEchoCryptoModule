@@ -41,6 +41,8 @@ struct uecm_x509_certificate_parameters {
 uecm_x509_certificate_parameters *uecm_x509_certificate_parameters_create() {
     uecm_x509_certificate_parameters *parameters;
 
+    parameters = NULL;
+
     ueum_safe_alloc(parameters, uecm_x509_certificate_parameters, 1);
     ueum_safe_alloc(parameters->serial, unsigned char, UNKNOWNECHOCRYPTOMODULE_DEFUALT_X509_SERIAL_LENGTH);
 	if (!uecm_crypto_random_bytes(parameters->serial, UNKNOWNECHOCRYPTOMODULE_DEFUALT_X509_SERIAL_LENGTH)) {

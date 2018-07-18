@@ -169,6 +169,11 @@ Compile statically:
 gcc -o basic_usage examples/basic_usage.c -lei_static -luecm_static -lueum_static -pthread lib/openssl/lib/libssl.a lib/openssl/lib/libcrypto.a lib/zlib/lib/libz.a -ldl
 ```
 
+Run:
+```bash
+./basic_usage "Hello world !"
+```
+
 *note*: `-pthread` and `-ldl` flags are necessary for Unix systems.
 
 # Dependencies

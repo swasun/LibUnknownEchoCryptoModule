@@ -17,11 +17,9 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
-#include <uecm/init.h>
-#include <ueum/bool.h>
-#include <ueum/alloc.h>
+#include <uecm/uecm.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
-#include <uecm/api/keystore/pkcs12_keystore.h>
 
 #include <stdio.h>
 
@@ -35,12 +33,15 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-	ei_init();
+	ei_init_or_die();
+    ei_logger_use_symbol_levels();
 
-	if (!uecm_init()) {
-		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
+	ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
+    if (!uecm_init()) {
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
 		goto clean_up;
-	}
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
     if ((keystore = uecm_pkcs12_keystore_load(argv[1], argv[2])) == NULL) {
         ei_stacktrace_push_msg("Failed to load specified pkcs12 keystore");

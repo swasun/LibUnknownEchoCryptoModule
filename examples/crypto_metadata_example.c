@@ -17,26 +17,30 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
-#include <uecm/init.h>
+#include <uecm/uecm.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
-#include <uecm/api/crypto_metadata.h>
-#include <uecm/factory/crypto_metadata_factory.h>
 
 int main() {
     uecm_crypto_metadata *our_crypto_metadata, *read_crypto_metadata;
 
-	ei_init();
+	ei_init_or_die();
+    ei_logger_use_symbol_levels();
 
 	our_crypto_metadata = NULL;
 	read_crypto_metadata = NULL;
 
-	if (!uecm_init()) {
-		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
+	ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
+    if (!uecm_init()) {
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
 		goto clean_up;
-	}
-    ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
-    read_crypto_metadata = uecm_crypto_metadata_create_empty();
+    if ((read_crypto_metadata = uecm_crypto_metadata_create_empty()) == NULL) {
+        ei_stacktrace_push_msg("Failed to create new read crypto metadata");
+        goto clean_up;
+    }
 
     ei_logger_info("Generating crypto metadata for point A...");
     if ((our_crypto_metadata = uecm_crypto_metadata_create_default()) == NULL) {

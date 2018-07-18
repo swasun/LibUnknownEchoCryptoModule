@@ -17,12 +17,9 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
-#include <uecm/init.h>
-#include <uecm/api/hash/hasher.h>
-#include <ueum/byte/byte_utility.h>
-#include <ueum/byte/hex_utility.h>
+#include <uecm/uecm.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
-#include <ueum/alloc.h>
 
 #include <stddef.h>
 #include <string.h>
@@ -54,13 +51,15 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-	ei_init();
+	ei_init_or_die();
+    ei_logger_use_symbol_levels();
 
-	if (!uecm_init()) {
-		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
+	ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
+    if (!uecm_init()) {
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
 		goto clean_up;
-	}
-    ei_logger_info("UnknownEchoLibCryptoModule is correctly initialized");
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
     ei_logger_info("Converting parameter '%s' to bytes...", argv[1]);
     if ((message = ueum_bytes_create_from_string(argv[1])) == NULL) {

@@ -31,6 +31,8 @@ unsigned char *uecm_friendly_name_build(unsigned char *nickname, size_t nickname
 	ei_check_parameter_or_return(keystore_type);
 
 	*friendly_name_size = nickname_size + 1 + strlen(keystore_type);
+	friendly_name = NULL;
+
 	ueum_safe_alloc(friendly_name, unsigned char, *friendly_name_size);
 	memcpy(friendly_name, nickname, nickname_size * sizeof(unsigned char));
 	memcpy(friendly_name + nickname_size, "_", sizeof(unsigned char));

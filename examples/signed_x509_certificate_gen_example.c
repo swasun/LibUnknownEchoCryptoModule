@@ -17,11 +17,9 @@
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
-#include <uecm/init.h>
+#include <uecm/uecm.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
-#include <uecm/api/certificate/x509_certificate_generation.h>
-#include <uecm/api/key/private_key.h>
-#include <uecm/factory/x509_certificate_factory.h>
 
 #include <stdio.h>
 
@@ -36,12 +34,15 @@ int main() {
     certificate = NULL;
     private_key = NULL;
 
-	ei_init();
+	ei_init_or_die();
+    ei_logger_use_symbol_levels();
 
-	if (!uecm_init()) {
-		ei_stacktrace_push_msg("Failed to initialize LibUnknownEcho");
+	ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
+    if (!uecm_init()) {
+		ei_stacktrace_push_msg("Failed to initialize LibUnknownEchoCryptoModule");
 		goto clean_up;
-	}
+    }
+    ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
     if (!uecm_x509_certificate_generate_self_signed_ca("SWA", &ca_certificate, &ca_private_key)) {
         ei_logger_error("Failed to generate self signed CA");

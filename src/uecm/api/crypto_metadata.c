@@ -55,6 +55,8 @@ static bool crypto_metadata_read_asym(const char *folder_name, const char *uid,
 uecm_crypto_metadata *uecm_crypto_metadata_create_empty() {
     uecm_crypto_metadata *metadata;
 
+    metadata = NULL;
+
     ueum_safe_alloc(metadata, uecm_crypto_metadata, 1);
     metadata->cipher_certificate = NULL;
     metadata->signer_certificate = NULL;
