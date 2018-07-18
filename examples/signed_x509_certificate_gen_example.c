@@ -23,6 +23,12 @@
 
 #include <stdio.h>
 
+#define CA_CERTIFICATE_PATH "out/ca_cert.pem"
+#define CA_PRIVATE_KEY_PATH "out/ca_key.pem"
+#define CERTIFICATE_PATH    "out/cert.pem"
+#define PRIVATE_KEY_PATH    "out/key.pem"
+#define CN                  "SWA"
+
 int main() {
     uecm_x509_certificate *ca_certificate, *read_ca_certificate, *certificate;
     uecm_private_key *ca_private_key, *read_ca_private_key, *private_key;
@@ -44,27 +50,38 @@ int main() {
     }
     ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
 
-    if (!uecm_x509_certificate_generate_self_signed_ca("SWA", &ca_certificate, &ca_private_key)) {
+    ei_logger_debug("CA_CERTIFICATE_PATH=%s", CA_CERTIFICATE_PATH);
+    ei_logger_debug("CA_PRIVATE_KEY_PATH=%s", CA_PRIVATE_KEY_PATH);
+    ei_logger_debug("CERTIFICATE_PATH=%s", CERTIFICATE_PATH);
+    ei_logger_debug("PRIVATE_KEY_PATH=%s", PRIVATE_KEY_PATH);
+    ei_logger_debug("CN=%s", CN);
+
+    ei_logger_info("Generating self signed CA key pair...");
+    if (!uecm_x509_certificate_generate_self_signed_ca(CN, &ca_certificate, &ca_private_key)) {
         ei_logger_error("Failed to generate self signed CA");
         goto clean_up;
     }
 
-    if (!uecm_x509_certificate_print_pair(ca_certificate, ca_private_key, "out/ca_cert.pem", "out/ca_key.pem", NULL)) {
+    ei_logger_info("Writing self signed CA key pair...");
+    if (!uecm_x509_certificate_print_pair(ca_certificate, ca_private_key, CA_CERTIFICATE_PATH, CA_PRIVATE_KEY_PATH, NULL)) {
         ei_logger_error("Failed to print ca certificate and private key to files");
         goto clean_up;
     }
 
-    if (!uecm_x509_certificate_load_from_files("out/ca_cert.pem", "out/ca_key.pem", NULL, &read_ca_certificate, &read_ca_private_key)) {
+    ei_logger_info("Loading self signed CA key pair from files...");
+    if (!uecm_x509_certificate_load_from_files(CA_CERTIFICATE_PATH, CA_PRIVATE_KEY_PATH, NULL, &read_ca_certificate, &read_ca_private_key)) {
         ei_logger_error("Failed to load ca certificate and private from files");
         goto clean_up;
     }
 
-    if (!uecm_x509_certificate_generate_signed(read_ca_certificate, read_ca_private_key, "SWA", &certificate, &private_key)) {
+    ei_logger_info("Generating signed certificate and private key from CA signed key pair...");
+    if (!uecm_x509_certificate_generate_signed(read_ca_certificate, read_ca_private_key, CN, &certificate, &private_key)) {
         ei_logger_error("Failed to generate certificate signed by CA");
         goto clean_up;
     }
 
-    if (!uecm_x509_certificate_print_pair(ca_certificate, ca_private_key, "out/cert.pem", "out/key.pem", NULL)) {
+    ei_logger_info("Writing signed certificate and private key...");
+    if (!uecm_x509_certificate_print_pair(certificate, private_key, CERTIFICATE_PATH, PRIVATE_KEY_PATH, NULL)) {
         ei_logger_error("Failed to print signed certificate and private key to files");
         goto clean_up;
     }
