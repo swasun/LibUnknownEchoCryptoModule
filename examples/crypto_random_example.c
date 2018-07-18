@@ -21,9 +21,17 @@
 #include <ueum/ueum.h>
 #include <ei/ei.h>
 
+#include <stddef.h>
+
 int main() {
+    unsigned char *buffer;
+    size_t buffer_size;
+
 	ei_init_or_die();
     ei_logger_use_symbol_levels();
+
+    buffer = NULL;
+    buffer_size = 16;
     
     ei_logger_info("Initializing LibUnknownEchoCryptoModule...");
     if (!uecm_init()) {
@@ -31,7 +39,28 @@ int main() {
 		goto clean_up;
     }
     ei_logger_info("LibUnknownEchoCryptoModule is correctly initialized.");
-    
+
+    ei_logger_info("Allocating 16 bytes...");
+    ueum_safe_alloc_or_goto(buffer, unsigned char, buffer_size, clean_up);
+
+    ei_logger_info("Buffer content:");
+    if (!ueum_hex_print(buffer, buffer_size, stdout)) {
+        ei_stacktrace_push_msg("Failed to print buffer content (empty)");
+        goto clean_up;
+    }
+
+    ei_logger_info("Generating crypto random bytes...");
+    if (!uecm_crypto_random_bytes(buffer, buffer_size)) {
+        ei_stacktrace_push_msg("Failed to generate crypto random bytes");
+        goto clean_up;
+    }
+
+    ei_logger_info("Buffer content:");
+    if (!ueum_hex_print(buffer, buffer_size, stdout)) {
+        ei_stacktrace_push_msg("Failed to print buffer content (filled)");
+        goto clean_up;
+    }
+
     ei_logger_info("Succeed !");
 
 clean_up:
