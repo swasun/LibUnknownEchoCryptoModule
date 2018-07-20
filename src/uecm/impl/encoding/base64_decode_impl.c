@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -49,7 +49,7 @@ unsigned char *uecm_base64_decode_impl(const unsigned char *src, size_t len, siz
     int pad = 0;
 
     //_memset(dtable, 0x80, 256);
-	memset(dtable, 0x80, 256);
+    memset(dtable, 0x80, 256);
     for (i = 0; i < sizeof(uecm_base64_table) - 1; i++) {
         dtable[uecm_base64_table[i]] = (unsigned char) i;
     }

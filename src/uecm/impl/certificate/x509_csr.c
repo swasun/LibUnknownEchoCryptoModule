@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -119,27 +119,27 @@ uecm_x509_csr *uecm_x509_string_to_csr(char *string) {
     uecm_x509_csr *csr;
     BIO *bio;
     char *error_buffer;
-	size_t string_size;
+    size_t string_size;
 
-	ei_check_parameter_or_return(string);
+    ei_check_parameter_or_return(string);
 
     csr = NULL;
-	string_size = strlen(string);
+    string_size = strlen(string);
 
-	if (string_size > INT_MAX) {
-		ei_stacktrace_push_msg("BIO_new_mem_buf() take a length in int but string_size > INT_MAX");
-		return NULL;
-	}
+    if (string_size > INT_MAX) {
+        ei_stacktrace_push_msg("BIO_new_mem_buf() take a length in int but string_size > INT_MAX");
+        return NULL;
+    }
 
     ueum_safe_alloc(csr, uecm_x509_csr, 1)
     bio = NULL;
     error_buffer = NULL;
 
     if ((bio = BIO_new_mem_buf(string, (int)string_size)) == NULL) {
-		uecm_openssl_error_handling(error_buffer, "BIO_new_mem_buf");
+        uecm_openssl_error_handling(error_buffer, "BIO_new_mem_buf");
         ueum_safe_free(csr);
-		goto clean_up;
-	}
+        goto clean_up;
+    }
 
     if (!PEM_read_bio_X509_REQ(bio, &csr->impl, NULL, NULL)) {
         uecm_openssl_error_handling(error_buffer, "PEM_read_bio_X509_REQ");
@@ -158,10 +158,10 @@ uecm_x509_csr *uecm_x509_bytes_to_csr(unsigned char *data, size_t data_size) {
     BIO *bio;
     char *error_buffer;
 
-	if (data_size > INT_MAX) {
-		ei_stacktrace_push_msg("BIO_new_mem_buf() take length in int but data_size > INT_MAX");
-		return NULL;
-	}
+    if (data_size > INT_MAX) {
+        ei_stacktrace_push_msg("BIO_new_mem_buf() take length in int but data_size > INT_MAX");
+        return NULL;
+    }
 
     csr = NULL;
     ueum_safe_alloc(csr, uecm_x509_csr, 1)
@@ -170,11 +170,11 @@ uecm_x509_csr *uecm_x509_bytes_to_csr(unsigned char *data, size_t data_size) {
     csr->impl = NULL;
 
     if ((bio = BIO_new_mem_buf(data, (int)data_size)) == NULL) {
-		uecm_openssl_error_handling(error_buffer, "BIO_new_mem_buf");
+        uecm_openssl_error_handling(error_buffer, "BIO_new_mem_buf");
         ueum_safe_free(csr);
         csr = NULL;
-		goto clean_up;
-	}
+        goto clean_up;
+    }
 
     if ((csr->impl = PEM_read_bio_X509_REQ(bio, NULL, NULL, NULL)) == NULL) {
         uecm_openssl_error_handling(error_buffer, "PEM_read_bio_X509_REQ");

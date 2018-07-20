@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -45,14 +45,14 @@ uecm_x509_certificate_parameters *uecm_x509_certificate_parameters_create() {
 
     ueum_safe_alloc(parameters, uecm_x509_certificate_parameters, 1);
     ueum_safe_alloc(parameters->serial, unsigned char, UNKNOWNECHOCRYPTOMODULE_DEFUALT_X509_SERIAL_LENGTH);
-	if (!uecm_crypto_random_bytes(parameters->serial, UNKNOWNECHOCRYPTOMODULE_DEFUALT_X509_SERIAL_LENGTH)) {
-		ei_stacktrace_push_msg("Failed to gen crypto random bytes");
-		return false;
-	}
+    if (!uecm_crypto_random_bytes(parameters->serial, UNKNOWNECHOCRYPTOMODULE_DEFUALT_X509_SERIAL_LENGTH)) {
+        ei_stacktrace_push_msg("Failed to gen crypto random bytes");
+        return false;
+    }
     /* @todo set default serial length in defines */
     parameters->serial_length = UNKNOWNECHOCRYPTOMODULE_DEFUALT_X509_SERIAL_LENGTH;
     /* Ensure serial is positive */
-	parameters->serial[0] &= 0x7f;
+    parameters->serial[0] &= 0x7f;
 
     parameters->bits = UNKNOWNECHOCRYPTOMODULE_DEFAULT_RSA_KEY_BITS;
     parameters->days = UNKNOWNECHOCRYPTOMODULE_DEFAULT_X509_NOT_AFTER_DAYS;

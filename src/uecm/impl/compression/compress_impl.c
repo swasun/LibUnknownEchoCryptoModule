@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -36,19 +36,19 @@ bool uecm_deflate_compress(unsigned char *plaintext, size_t plaintext_len, unsig
     Byte *compr;
     int error_code;
 
-	if (plaintext_len > ULONG_MAX) {
-		ei_stacktrace_push_msg("plaintext_len=%ld > ULONG_MAX=%ld", plaintext_len, ULONG_MAX);
-		return false;
-	}
+    if (plaintext_len > ULONG_MAX) {
+        ei_stacktrace_push_msg("plaintext_len=%ld > ULONG_MAX=%ld", plaintext_len, ULONG_MAX);
+        return false;
+    }
 
-	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    /* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     len = compressBound((uLong)plaintext_len);
     compr = NULL;
     tmp_compr_len = len;
 
     ueum_safe_alloc(compr, Byte, len);
 
-	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    /* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     if ((error_code = compress(compr, &tmp_compr_len, (const Bytef *)plaintext, (uLong)plaintext_len)) != Z_OK) {
         uecm_zlib_error_handling(error_code);
         return false;
@@ -65,17 +65,17 @@ bool uecm_inflate_decompress(unsigned char *compressed_text, size_t compressed_l
     Byte *decompr;
     int error_code;
 
-	if (decompressed_len > ULONG_MAX) {
-		ei_stacktrace_push_msg("plaintext_len=%ld > ULONG_MAX=%ld", decompressed_len, ULONG_MAX);
-		return false;
-	}
+    if (decompressed_len > ULONG_MAX) {
+        ei_stacktrace_push_msg("plaintext_len=%ld > ULONG_MAX=%ld", decompressed_len, ULONG_MAX);
+        return false;
+    }
 
-	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    /* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     tmp_decompr_len = (uLong)decompressed_len;
     decompr = NULL;
     ueum_safe_alloc(decompr, Byte, tmp_decompr_len);
 
-	/* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
+    /* Safe to cast plaintext_len to uLong because plaintext_len is <= ULONG_MAX */
     if ((error_code = uncompress(decompr, &tmp_decompr_len, (Byte *)compressed_text, (uLong)compressed_len)) != Z_OK) {
         uecm_zlib_error_handling(error_code);
         return false;
@@ -101,7 +101,7 @@ bool uecm_deflate_compress_file(FILE *source, FILE *dest, int level) {
     z_stream strm;
     unsigned char in[CHUNK];
     unsigned char out[CHUNK];
-	size_t r;
+    size_t r;
 
     /* allocate deflate state */
     strm.zalloc = Z_NULL;
@@ -115,14 +115,14 @@ bool uecm_deflate_compress_file(FILE *source, FILE *dest, int level) {
 
     /* compress until end of file */
     do {
-		r = fread(in, 1, CHUNK, source);
-		if (r > UINT_MAX) {
-			ei_stacktrace_push_msg("Stop compress to prevent data loss because fread result > to UINT_MAX");
-			(void)deflateEnd(&strm);
-			return false;
-		}
-		/* Safe to cast size_t to uInt as r is < to UINT_MAX */
-		strm.avail_in = (uInt)r;
+        r = fread(in, 1, CHUNK, source);
+        if (r > UINT_MAX) {
+            ei_stacktrace_push_msg("Stop compress to prevent data loss because fread result > to UINT_MAX");
+            (void)deflateEnd(&strm);
+            return false;
+        }
+        /* Safe to cast size_t to uInt as r is < to UINT_MAX */
+        strm.avail_in = (uInt)r;
         if (ferror(source)) {
             (void)deflateEnd(&strm);
             uecm_zlib_error_handling(error_code);
@@ -194,7 +194,7 @@ bool uecm_inflate_decompress_file(FILE *source, FILE *dest) {
     z_stream strm;
     unsigned char in[CHUNK];
     unsigned char out[CHUNK];
-	size_t r;
+    size_t r;
 
     /* allocate inflate state */
     strm.zalloc = Z_NULL;
@@ -210,14 +210,14 @@ bool uecm_inflate_decompress_file(FILE *source, FILE *dest) {
 
     /* decompress until deflate stream ends or end of file */
     do {
-		r = fread(in, 1, CHUNK, source);
-		if (r > UINT_MAX) {
-			ei_stacktrace_push_msg("Stop compress to prevent data loss because fread result > to UINT_MAX");
-			(void)deflateEnd(&strm);
-			return false;
-		}
-		/* Safe to cast size_t to uInt as r is < to UINT_MAX */
-		strm.avail_in = (uInt)r;
+        r = fread(in, 1, CHUNK, source);
+        if (r > UINT_MAX) {
+            ei_stacktrace_push_msg("Stop compress to prevent data loss because fread result > to UINT_MAX");
+            (void)deflateEnd(&strm);
+            return false;
+        }
+        /* Safe to cast size_t to uInt as r is < to UINT_MAX */
+        strm.avail_in = (uInt)r;
         if (ferror(source)) {
             (void)inflateEnd(&strm);
             uecm_zlib_error_handling(error_code);
@@ -244,7 +244,7 @@ bool uecm_inflate_decompress_file(FILE *source, FILE *dest) {
                 case Z_NEED_DICT:
                     /* and fall through */
                     error_code = Z_DATA_ERROR;
-    			break;
+                break;
                 case Z_DATA_ERROR:
                 case Z_MEM_ERROR:
                     (void)inflateEnd(&strm);

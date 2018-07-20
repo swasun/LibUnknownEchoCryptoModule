@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -47,11 +47,11 @@ bool uecm_cipher_plain_data(unsigned char *plain_data, size_t plain_data_size,
     size_t signature_size, compressed_size;
     uecm_signer *signer;
 
-	ei_check_parameter_or_return(plain_data);
-	ei_check_parameter_or_return(plain_data_size);
-	ei_check_parameter_or_return(public_key);
-	ei_check_parameter_or_return(digest_name);
-	ei_check_parameter_or_return(cipher_name);
+    ei_check_parameter_or_return(plain_data);
+    ei_check_parameter_or_return(plain_data_size);
+    ei_check_parameter_or_return(public_key);
+    ei_check_parameter_or_return(digest_name);
+    ei_check_parameter_or_return(cipher_name);
 
     result = false;
     encrypted_key = NULL;
@@ -64,13 +64,13 @@ bool uecm_cipher_plain_data(unsigned char *plain_data, size_t plain_data_size,
     compressed = NULL;
 
     if ((compressed = uecm_compress_buf(plain_data, plain_data_size, &compressed_size)) == NULL) {
-		ei_stacktrace_push_msg("Failed to compress ReceiverHeader content");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to compress ReceiverHeader content");
+        goto clean_up;
+    }
 
     if (!envelope_seal_buffer(uecm_public_key_get_impl(public_key), compressed,
         (int)compressed_size, &encrypted_key, &encrypted_key_len, &iv, &iv_len,
-    	&cipher_data_temp, &cipher_data_len_temp, cipher_name)) {
+        &cipher_data_temp, &cipher_data_len_temp, cipher_name)) {
 
         ei_stacktrace_push_msg("Failed to envelope buffer");
         goto clean_up;
@@ -129,11 +129,11 @@ bool uecm_decipher_cipher_data(unsigned char *cipher_data,
     int cipher_data_len_temp, encrypted_key_len, iv_len, signature_size, plain_data_size_read, compressed_size;
     uecm_signer *signer;
 
-	ei_check_parameter_or_return(cipher_data);
-	ei_check_parameter_or_return(cipher_data_size);
-	ei_check_parameter_or_return(private_key);
-	ei_check_parameter_or_return(digest_name);
-	ei_check_parameter_or_return(cipher_name);
+    ei_check_parameter_or_return(cipher_data);
+    ei_check_parameter_or_return(cipher_data_size);
+    ei_check_parameter_or_return(private_key);
+    ei_check_parameter_or_return(digest_name);
+    ei_check_parameter_or_return(cipher_name);
 
     result = false;
     stream = ueum_byte_stream_create();
@@ -170,9 +170,9 @@ bool uecm_decipher_cipher_data(unsigned char *cipher_data,
     ueum_byte_read_next_bytes(stream, &cipher_data_temp, (size_t)cipher_data_len_temp);
 
     if (verify_signature && !ueum_byte_read_next_bytes(stream, &signature, signature_size)) {
-		ei_stacktrace_push_msg("Failed to read signature field");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to read signature field");
+        goto clean_up;
+    }
 
     if (!envelope_open_buffer(uecm_private_key_get_impl(private_key),
         cipher_data_temp, cipher_data_len_temp, encrypted_key,
@@ -185,21 +185,21 @@ bool uecm_decipher_cipher_data(unsigned char *cipher_data,
     *plain_data_size = plain_data_size_read;
 
     if ((*plain_data = uecm_decompress_buf(compressed, (size_t)compressed_size, plain_data_size_read)) == NULL) {
-		ei_stacktrace_push_msg("Failed to decompress ServerHeader content");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to decompress ServerHeader content");
+        goto clean_up;
+    }
 
     if (verify_signature) {
         if ((signer = uecm_rsa_signer_create(public_key, private_key, digest_name)) == NULL) {
             ei_stacktrace_push_msg("Failed to create signer to verify signature");
             goto clean_up;
         }
-    	if (!uecm_signer_verify_buffer(signer, *plain_data, *plain_data_size, signature, signature_size)) {
+        if (!uecm_signer_verify_buffer(signer, *plain_data, *plain_data_size, signature, signature_size)) {
             ueum_safe_free(*plain_data);
             *plain_data_size = 0;
-    		ei_stacktrace_push_msg("Failed to verify the signature of the sender");
-    		goto clean_up;
-    	}
+            ei_stacktrace_push_msg("Failed to verify the signature of the sender");
+            goto clean_up;
+        }
     }
 
     result = true;
@@ -216,43 +216,43 @@ clean_up:
 }
 
 bool uecm_cipher_plain_data_default(unsigned char *plain_data, size_t plain_data_size,
-	uecm_public_key *public_key, unsigned char **cipher_data, size_t *cipher_data_size) {
+    uecm_public_key *public_key, unsigned char **cipher_data, size_t *cipher_data_size) {
 
-	unsigned char *cipher_data_temp;
-	size_t cipher_data_size_temp;
+    unsigned char *cipher_data_temp;
+    size_t cipher_data_size_temp;
 
-	if (!uecm_cipher_plain_data(plain_data, plain_data_size, public_key, NULL, &cipher_data_temp,
-		&cipher_data_size_temp, UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) {
+    if (!uecm_cipher_plain_data(plain_data, plain_data_size, public_key, NULL, &cipher_data_temp,
+        &cipher_data_size_temp, UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) {
 
-		ei_stacktrace_push_msg("Failed to cipher plain data with default parameters: %s and %s",
-			UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME);
-		return false;
-	}
+        ei_stacktrace_push_msg("Failed to cipher plain data with default parameters: %s and %s",
+            UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME);
+        return false;
+    }
 
-	*cipher_data = cipher_data_temp;
-	*cipher_data_size = cipher_data_size_temp;
+    *cipher_data = cipher_data_temp;
+    *cipher_data_size = cipher_data_size_temp;
 
-	return true;
+    return true;
 }
 
 bool uecm_decipher_cipher_data_default(unsigned char *cipher_data,
-	size_t cipher_data_size, uecm_private_key *private_key,
-	unsigned char **plain_data, size_t *plain_data_size) {
+    size_t cipher_data_size, uecm_private_key *private_key,
+    unsigned char **plain_data, size_t *plain_data_size) {
 
-	unsigned char *plain_data_temp;
-	size_t plain_data_size_temp;
+    unsigned char *plain_data_temp;
+    size_t plain_data_size_temp;
 
-	if (!uecm_decipher_cipher_data(cipher_data, cipher_data_size, private_key,
-		NULL, &plain_data_temp, &plain_data_size_temp, UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME,
-		UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) {
+    if (!uecm_decipher_cipher_data(cipher_data, cipher_data_size, private_key,
+        NULL, &plain_data_temp, &plain_data_size_temp, UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME,
+        UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME)) {
 
-		ei_stacktrace_push_msg("Failed to decipher cipher data with default parameters: %s and %s",
-			UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME);
-		return false;
-	}
+        ei_stacktrace_push_msg("Failed to decipher cipher data with default parameters: %s and %s",
+            UNKNOWNECHOCRYPTOMODULE_DEFAULT_CIPHER_NAME, UNKNOWNECHOCRYPTOMODULE_DEFAULT_DIGEST_NAME);
+        return false;
+    }
 
-	*plain_data = plain_data_temp;
-	*plain_data_size = plain_data_size_temp;
+    *plain_data = plain_data_temp;
+    *plain_data_size = plain_data_size_temp;
 
-	return true;
+    return true;
 }

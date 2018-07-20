@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -165,10 +165,10 @@ bool uecm_pkcs12_keystore_add_certificate(uecm_pkcs12_keystore *keystore, uecm_x
     ei_check_parameter_or_return(friendly_name);
     ei_check_parameter_or_return(friendly_name_size > 0);
 
-	if (friendly_name_size > INT_MAX) {
-		ei_stacktrace_push_msg("X509_alias_set1() needs a length in int, however friendly_name_size > UINT_MAX");
-		return false;
-	}
+    if (friendly_name_size > INT_MAX) {
+        ei_stacktrace_push_msg("X509_alias_set1() needs a length in int, however friendly_name_size > UINT_MAX");
+        return false;
+    }
 
     if (keystore->other_certificates) {
         ueum_safe_realloc(keystore->other_certificates, uecm_x509_certificate *, keystore->other_certificates_number, 1);
@@ -176,7 +176,7 @@ bool uecm_pkcs12_keystore_add_certificate(uecm_pkcs12_keystore *keystore, uecm_x
         ueum_safe_alloc(keystore->other_certificates, uecm_x509_certificate *, 1);
     }
     keystore->other_certificates[keystore->other_certificates_number] = certificate;
-	/* It's safe to cast friendly_name_size to int because we checked it is <= UINT_MAX */
+    /* It's safe to cast friendly_name_size to int because we checked it is <= UINT_MAX */
     X509_alias_set1(uecm_x509_certificate_get_impl(certificate), friendly_name, (int)friendly_name_size);
     keystore->other_certificates_number++;
 
@@ -189,9 +189,9 @@ bool uecm_pkcs12_keystore_add_certificate_from_file(uecm_pkcs12_keystore *keysto
     uecm_x509_certificate *certificate;
 
     if (!uecm_x509_certificate_load_from_file(file_name, &certificate)) {
-		ei_stacktrace_push_msg("Failed to load certificate from path '%s'", file_name);
-		return false;
-	}
+        ei_stacktrace_push_msg("Failed to load certificate from path '%s'", file_name);
+        return false;
+    }
 
     if (!uecm_pkcs12_keystore_add_certificate(keystore, certificate, friendly_name, friendly_name_size)) {
         uecm_x509_certificate_destroy(certificate);
@@ -487,7 +487,7 @@ static bool load_certs_pkeys_bag(uecm_pkcs12_keystore *keystore, const PKCS12_SA
     //const STACK_OF(X509_ATTRIBUTE) *attrs;
     char *error_buffer, *name;
     uecm_x509_certificate *other_certificate;
-	size_t name_size;
+    size_t name_size;
 
     pkey = NULL;
     p8 = NULL;
@@ -537,18 +537,18 @@ static bool load_certs_pkeys_bag(uecm_pkcs12_keystore *keystore, const PKCS12_SA
 
             name = PKCS12_get_friendlyname((PKCS12_SAFEBAG *)bag);
             if (name) {
-				name_size = strlen(name);
-				if (name_size > INT_MAX) {
-					ei_stacktrace_push_msg("X509_alias_set1() need a length in int but name_size > INT_MAX");
-					return false;
-				}
+                name_size = strlen(name);
+                if (name_size > INT_MAX) {
+                    ei_stacktrace_push_msg("X509_alias_set1() need a length in int but name_size > INT_MAX");
+                    return false;
+                }
                 if (keystore->friendly_name) {
                     if (keystore->other_certificates) {
                         ueum_safe_realloc(keystore->other_certificates, uecm_x509_certificate *, keystore->other_certificates_number, 1);
                     } else {
                         ueum_safe_alloc(keystore->other_certificates, uecm_x509_certificate *, 1);
                     }
-					/* It's safe to cast name_size to int as we compare the value with INT_MAX */
+                    /* It's safe to cast name_size to int as we compare the value with INT_MAX */
                     X509_alias_set1(x509, (const unsigned char *)name, (int)name_size);
                     ueum_safe_free(name);
                     other_certificate = uecm_x509_certificate_create_empty();

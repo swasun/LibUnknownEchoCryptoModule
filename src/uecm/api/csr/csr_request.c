@@ -1,19 +1,19 @@
 /******************************************************************************************
- * Copyright (C) 2018 by Charly Lamothe													  *
- *																						  *
- * This file is part of LibUnknownEchoCryptoModule.										  *
- *																						  *
+ * Copyright (C) 2018 by Charly Lamothe                                                   *
+ *                                                                                        *
+ * This file is part of LibUnknownEchoCryptoModule.                                       *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by				  *
- *   the Free Software Foundation, either version 3 of the License, or					  *
- *   (at your option) any later version.												  *
- *																						  *
+ *   it under the terms of the GNU General Public License as published by                 *
+ *   the Free Software Foundation, either version 3 of the License, or                    *
+ *   (at your option) any later version.                                                  *
+ *                                                                                        *
  *   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of						  *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  *
- *   GNU General Public License for more details.										  *
- *																						  *
- *   You should have received a copy of the GNU General Public License					  *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of                       *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        *
+ *   GNU General Public License for more details.                                         *
+ *                                                                                        *
+ *   You should have received a copy of the GNU General Public License                    *
  *   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 
@@ -33,8 +33,8 @@ static char *generate_csr_string(uecm_x509_certificate *certificate, uecm_privat
     uecm_x509_csr *csr;
     char *csr_string;
 
-	ei_check_parameter_or_return(certificate);
-	ei_check_parameter_or_return(private_key);
+    ei_check_parameter_or_return(certificate);
+    ei_check_parameter_or_return(private_key);
 
     csr_string = NULL;
     csr = NULL;
@@ -65,12 +65,12 @@ unsigned char *uecm_csr_build_client_request(uecm_x509_certificate *certificate,
     ueum_byte_stream *stream;
     unsigned char *cipher_data;
 
-	ei_check_parameter_or_return(certificate);
-	ei_check_parameter_or_return(private_key);
-	ei_check_parameter_or_return(ca_public_key);
-	ei_check_parameter_or_return(future_key);
-	ei_check_parameter_or_return(iv);
-	ei_check_parameter_or_return(iv_size > 0);
+    ei_check_parameter_or_return(certificate);
+    ei_check_parameter_or_return(private_key);
+    ei_check_parameter_or_return(ca_public_key);
+    ei_check_parameter_or_return(future_key);
+    ei_check_parameter_or_return(iv);
+    ei_check_parameter_or_return(iv_size > 0);
 
     csr_string = NULL;
     public_key = NULL;
@@ -78,34 +78,34 @@ unsigned char *uecm_csr_build_client_request(uecm_x509_certificate *certificate,
     cipher_data = NULL;
 
     if ((csr_string = generate_csr_string(certificate, private_key)) == NULL) {
-		ei_stacktrace_push_msg("Failed to generate CSR string from certificate and private key");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to generate CSR string from certificate and private key");
+        goto clean_up;
+    }
 
     if (!ueum_byte_writer_append_int(stream, (int)strlen(csr_string))) {
-		ei_stacktrace_push_msg("Failed to write CSR string size to stream");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to write CSR string size to stream");
+        goto clean_up;
+    }
     if (!ueum_byte_writer_append_int(stream, (int)future_key->size)) {
-		ei_stacktrace_push_msg("Failed to write future key size to stream");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to write future key size to stream");
+        goto clean_up;
+    }
     if (!ueum_byte_writer_append_int(stream, (int)iv_size)) {
-		ei_stacktrace_push_msg("Failed to write IV size to stream");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to write IV size to stream");
+        goto clean_up;
+    }
     if (!ueum_byte_writer_append_string(stream, csr_string)) {
-		ei_stacktrace_push_msg("Failed to write CSR string to stream");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to write CSR string to stream");
+        goto clean_up;
+    }
     if (!ueum_byte_writer_append_bytes(stream, future_key->data, future_key->size)) {
-		ei_stacktrace_push_msg("Failed to write future to stream");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to write future to stream");
+        goto clean_up;
+    }
     if (!ueum_byte_writer_append_bytes(stream, iv, iv_size)) {
-		ei_stacktrace_push_msg("Failed to write IV to stream");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to write IV to stream");
+        goto clean_up;
+    }
 
     if (!uecm_cipher_plain_data(ueum_byte_stream_get_data(stream), ueum_byte_stream_get_size(stream), ca_public_key, NULL, &cipher_data,
         cipher_data_size, cipher_name, digest_name)) {
@@ -129,19 +129,19 @@ uecm_x509_certificate *uecm_csr_process_server_response(unsigned char *server_re
     unsigned char *signed_certificate_buffer;
     size_t signed_certificate_buffer_size;
 
-	ei_check_parameter_or_return(server_response);
-	ei_check_parameter_or_return(server_response_size > 0);
-	ei_check_parameter_or_return(key);
-	ei_check_parameter_or_return(iv);
-	ei_check_parameter_or_return(iv_size > 0);
+    ei_check_parameter_or_return(server_response);
+    ei_check_parameter_or_return(server_response_size > 0);
+    ei_check_parameter_or_return(key);
+    ei_check_parameter_or_return(iv);
+    ei_check_parameter_or_return(iv_size > 0);
 
     signed_certificate = NULL;
 
     sym_encrypter = uecm_sym_encrypter_default_create(key);
-	if (!uecm_sym_encrypter_decrypt(sym_encrypter, server_response, server_response_size, iv, &signed_certificate_buffer, &signed_certificate_buffer_size)) {
-		ei_stacktrace_push_msg("Failed to decrypt signed certificate");
-		goto clean_up;
-	}
+    if (!uecm_sym_encrypter_decrypt(sym_encrypter, server_response, server_response_size, iv, &signed_certificate_buffer, &signed_certificate_buffer_size)) {
+        ei_stacktrace_push_msg("Failed to decrypt signed certificate");
+        goto clean_up;
+    }
 
     if ((signed_certificate = uecm_x509_certificate_load_from_bytes(signed_certificate_buffer, signed_certificate_buffer_size)) == NULL) {
         ei_stacktrace_push_msg("Failed to convert bytes to x509 certificate");
@@ -193,10 +193,10 @@ unsigned char *uecm_csr_build_server_response(uecm_private_key *csr_private_key,
     }
 
     if (!ueum_byte_writer_append_bytes(stream, decipher_data, decipher_data_size)) {
-		ei_stacktrace_push_msg("Failed to write deciphered client CSR");
-		goto clean_up;
-	}
-	ueum_byte_stream_set_position(stream, 0);
+        ei_stacktrace_push_msg("Failed to write deciphered client CSR");
+        goto clean_up;
+    }
+    ueum_byte_stream_set_position(stream, 0);
 
     ueum_byte_read_next_int(stream, &read_int);
     if (read_int == 0) {
@@ -256,9 +256,9 @@ unsigned char *uecm_csr_build_server_response(uecm_private_key *csr_private_key,
 
     sym_encrypter = uecm_sym_encrypter_default_create(key);
     if (!uecm_sym_encrypter_encrypt(sym_encrypter, (unsigned char *)string_pem_certificate, string_pem_certificate_size, iv, &server_response, server_response_size)) {
-		ei_stacktrace_push_msg("Failed to encrypt csr content");
-		goto clean_up;
-	}
+        ei_stacktrace_push_msg("Failed to encrypt csr content");
+        goto clean_up;
+    }
 
 clean_up:
     ueum_safe_free(decipher_data);
