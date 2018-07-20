@@ -19,11 +19,7 @@ set(LIBEI_INSTALL ${ROOT_BUILD_DIR}/libei/install CACHE STRING "Default LIBEI in
 SET(LIBUEUM_SYSTEM TRUE CACHE BOOL "Default LIBUEUM installation type")
 set(LIBUEUM_INSTALL ${ROOT_BUILD_DIR}/libueum/install CACHE STRING "Default LIBUEUM install path")
 
-if (WIN32)
-	SET(OPENSSL_SYSTEM TRUE CACHE BOOL "Default OPENSSL installation type")
-else ()
-	SET(OPENSSL_SYSTEM FALSE CACHE BOOL "Default  OPENSSL installation type")
-endif ()
+SET(OPENSSL_SYSTEM TRUE CACHE BOOL "Default  OPENSSL installation type")
 
 SET(ZLIB_SYSTEM TRUE CACHE BOOL "Default ZLIB installation type")
 

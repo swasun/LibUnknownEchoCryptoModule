@@ -25,9 +25,14 @@ if (OPENSSL_SYSTEM)
 			"C:\\OpenSSL-Win64\\lib\\libcrypto.lib"
 		)
     elseif (UNIX)
+        #set(OPENSSL_LIBRARIES
+		#	"-lssl"
+		#	"-lcrypto"
+		#)
+		set(OPENSSL_INCLUDE_DIR "lib/openssl/include")
         set(OPENSSL_LIBRARIES
-			"-lssl"
-			"-lcrypto"
+			"${CMAKE_CURRENT_SOURCE_DIR}/lib/openssl/lib/libssl.a"
+			"${CMAKE_CURRENT_SOURCE_DIR}/lib/openssl/lib/libcrypto.a"
 		)
 	endif ()
 else (OPENSSL_SYSTEM)
