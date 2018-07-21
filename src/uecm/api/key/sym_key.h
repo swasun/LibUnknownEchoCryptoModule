@@ -27,7 +27,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_SYM_KEY_H
 #define UNKNOWNECHOCRYPTOMODULE_SYM_KEY_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stddef.h>
 

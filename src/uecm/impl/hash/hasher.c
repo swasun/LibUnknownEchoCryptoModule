@@ -19,9 +19,8 @@
 
 #include <uecm/api/hash/hasher.h>
 #include <uecm/impl/errorHandling/openssl_error_handling.h>
-#include <ueum/alloc.h>
 #include <ei/ei.h>
-#include <ueum/string/string_utility.h>
+#include <ueum/ueum.h>
 
 #include <openssl/evp.h>
 #include <openssl/sha.h>

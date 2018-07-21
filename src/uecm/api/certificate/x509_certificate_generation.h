@@ -30,7 +30,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_X509_CERTFICATE_GENERATION_H
 #define UNKNOWNECHOCRYPTOMODULE_X509_CERTFICATE_GENERATION_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 #include <uecm/api/certificate/x509_certificate.h>
 #include <uecm/api/certificate/x509_certificate_parameters.h>
 #include <uecm/api/key/private_key.h>

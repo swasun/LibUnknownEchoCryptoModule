@@ -40,6 +40,8 @@ endif ()
 
 # --- COMPILE OPTIONS ---
 
+set(CMAKE_C_FLAGS "-fPIC")
+
 # Compile options for Microsoft Visual Studio
 if (MSVC)
 	# Add O2 optimization if build type is Release
@@ -51,7 +53,7 @@ if (MSVC)
 	endif ()
     #add_compile_options("/W4") 
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON) # This variable is used to initialize the property on each target as it is created
-	set(CMAKE_C_FLAGS "${CMAKE_ENABLE_C99}") # Compile with C99 rules
+	set(CMAKE_C_FLAGS "${CMAKE_ENABLE_C11}") # Compile with C11 rules
 
 	# Use secure functions by defaualt and suppress warnings about
     # deprecated" functions
@@ -80,7 +82,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") # If compiler is Clang
 else ()
 	# Unix plateform
 	if (UNIX)
-		add_compile_options("-std=gnu99" "-pthread" "-ldl")
+		add_compile_options("-std=gnu11" "-pthread" "-ldl")
 		if (CMAKE_BUILD_TYPE STREQUAL "Release") # Release build mode
 			if (CMAKE_COMPILER_IS_GNUCC) # GNU compiler
 				add_compile_options("-O2") # O2 optimization
@@ -188,7 +190,7 @@ set(LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES
 	${CMAKE_THREAD_LIBS_INIT}
 )
 
-set(LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR
+set(LIBUNKNOWNECHOCRYPTOMODULE_INCLUDE_DIR
 	${ZLIB_INCLUDE_DIR}
 	${LIBERRORINTERCEPTOR_INCLUDE_DIR}
 	${LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR}
@@ -197,9 +199,6 @@ set(LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR
 
 
 # --- BUILD UNKNOWNECHOCRYPTOMODULE ---
-
-include_directories(${LIBUNKNOWNECHOCRYPTO_MODULE_INCLUDE_DIR})
-link_directories(${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
 
 set(PROJECT_NAME_STATIC "${PROJECT_NAME}_static")
 set(PROJECT_NAME_SHARED "${PROJECT_NAME}_shared")
@@ -213,7 +212,9 @@ if (LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES)
 	add_dependencies(${PROJECT_NAME_SHARED} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 endif ()
 target_include_directories(${PROJECT_NAME_SHARED} PUBLIC "${SRC_PATH}")
-set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME} uecm)
+target_include_directories(${PROJECT_NAME_SHARED} PUBLIC ${LIBUNKNOWNECHOCRYPTOMODULE_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME_SHARED} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
+set_target_properties(${PROJECT_NAME_SHARED} PROPERTIES OUTPUT_NAME uecm)
 
 # Build static library
 add_library(${PROJECT_NAME_STATIC} STATIC ${PROGRAM_TARGET_SRC_FILES})
@@ -221,8 +222,9 @@ if (LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES)
 	add_dependencies(${PROJECT_NAME_STATIC} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 endif ()
 target_include_directories(${PROJECT_NAME_STATIC} PUBLIC "${SRC_PATH}")
+target_include_directories(${PROJECT_NAME_STATIC} PUBLIC ${LIBUNKNOWNECHOCRYPTOMODULE_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME_STATIC} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
 set_target_properties(${PROJECT_NAME_STATIC} PROPERTIES OUTPUT_NAME uecm_static)
-
 
 # --- INSTALL ---
 
@@ -253,10 +255,8 @@ foreach (filePath ${files} )
 		add_dependencies(${executableName} ${LIBUKNOWNECHOCRYPTOMODULE_DEPENDENCIES})
 	endif ()
 	target_link_libraries(${executableName} ${PROJECT_NAME_STATIC})
+	target_include_directories(${executableName} PUBLIC ${LIBUNKNOWNECHOCRYPTOMODULE_INCLUDE_DIR})
 	target_link_libraries(${executableName} ${LIBUNKNOWNECHOCRYPTOMODULE_LIBRARIES})
-	target_link_libraries(${executableName} ${LIBUNKNOWNECHOUTILSMODULE_LIBRARIES})
-	target_link_libraries(${executableName} ${ZLIB_LIBRARIES})
-	target_link_libraries(${executableName} ${OPENSSL_LIBRARIES})
 	if (UNIX)
 		target_link_libraries(${executableName} "-ldl")
 	endif ()

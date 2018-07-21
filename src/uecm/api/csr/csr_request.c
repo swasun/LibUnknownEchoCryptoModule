@@ -24,10 +24,7 @@
 #include <uecm/api/encryption/sym_encrypter.h>
 #include <uecm/factory/sym_encrypter_factory.h>
 #include <ei/ei.h>
-#include <ueum/byte/byte_stream.h>
-#include <ueum/byte/byte_writer.h>
-#include <ueum/byte/byte_reader.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 
 static char *generate_csr_string(uecm_x509_certificate *certificate, uecm_private_key *private_key) {
     uecm_x509_csr *csr;

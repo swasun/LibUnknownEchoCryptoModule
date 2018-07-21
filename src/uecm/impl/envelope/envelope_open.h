@@ -22,7 +22,7 @@
 
 #include <openssl/evp.h>
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 bool envelope_open_buffer(EVP_PKEY *priv_key, unsigned char *ciphertext, int ciphertext_len,
     unsigned char *encrypted_key, int encrypted_key_len, unsigned char *iv,

@@ -18,7 +18,7 @@
  ******************************************************************************************/
 
 #include <uecm/impl/openssl_init.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
 
 #include <openssl/ssl.h>

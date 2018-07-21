@@ -31,7 +31,7 @@
 
 #include <uecm/api/certificate/x509_certificate.h>
 #include <uecm/api/key/private_key.h>
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stdio.h>
 #include <stddef.h>

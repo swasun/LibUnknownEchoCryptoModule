@@ -28,7 +28,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_X509_CERTIFICATE_PARAMETERS_H
 #define UNKNOWNECHOCRYPTOMODULE_X509_CERTIFICATE_PARAMETERS_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 typedef struct uecm_x509_certificate_parameters uecm_x509_certificate_parameters;
 

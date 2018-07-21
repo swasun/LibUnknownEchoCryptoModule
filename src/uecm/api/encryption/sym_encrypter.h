@@ -28,7 +28,7 @@
 #define UNKNOWNECHOCRYPTOMODULE_SYM_ENCRYPTER_H
 
 #include <uecm/api/key/sym_key.h>
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stddef.h>
 

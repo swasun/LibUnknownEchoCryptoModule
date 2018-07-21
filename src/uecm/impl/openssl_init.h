@@ -20,7 +20,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_OPENSSL_INIT_H
 #define UNKNOWNECHOCRYPTOMODULE_OPENSSL_INIT_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 bool uecm_openssl_init();
 

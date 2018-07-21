@@ -27,7 +27,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_HASHER_H
 #define UNKNOWNECHOCRYPTOMODULE_HASHER_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stddef.h>
 

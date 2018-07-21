@@ -22,7 +22,7 @@
 
 #include <openssl/evp.h>
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 bool envelope_seal_buffer(EVP_PKEY *pub_key, unsigned char *plaintext, int plaintext_len,
     unsigned char **encrypted_key, int *encrypted_key_len, unsigned char **iv, int *iv_len,

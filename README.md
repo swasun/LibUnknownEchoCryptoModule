@@ -1,4 +1,4 @@
-A cross-platform C99 library which depends on [OpenSSL](https://github.com/openssl/openssl) that allows to easily and quickly add crypto capabilities to your projects.
+A cross-platform C11 library which depends on [OpenSSL](https://github.com/openssl/openssl) that allows to easily and quickly add crypto capabilities to your projects.
 
 Its main purpose is to be the crypto module of [LibUnknownEcho](https://github.com/swasun/LibUnknownEcho) library.
 

@@ -31,7 +31,7 @@
 #include <uecm/api/certificate/x509_certificate.h>
 #include <uecm/api/certificate/x509_csr.h>
 #include <uecm/api/key/private_key.h>
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 uecm_x509_certificate *uecm_x509_certificate_sign_from_csr(uecm_x509_csr *csr, uecm_x509_certificate *ca_certificate, uecm_private_key *ca_private_key);
 

@@ -22,8 +22,7 @@
 #include <uecm/utils/crypto_random.h>
 #include <uecm/api/hash/hasher.h>
 #include <ei/ei.h>
-#include <ueum/alloc.h>
-#include <ueum/byte/byte_utility.h>
+#include <ueum/ueum.h>
 
 #include <stddef.h>
 #include <string.h>

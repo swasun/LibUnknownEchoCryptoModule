@@ -27,7 +27,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_CRYPTO_RANDOM_H
 #define UNKNOWNECHOCRYPTOMODULE_CRYPTO_RANDOM_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stddef.h>
 

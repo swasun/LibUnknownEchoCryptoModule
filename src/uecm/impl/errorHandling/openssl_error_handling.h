@@ -21,7 +21,7 @@
 #define UNKNOWNECHOCRYPTOMODULE_OPENSSL_ERROR_HANDLING_H
 
 #include <ei/ei.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 
 char *uecm_openssl_error_handling_impl(char *begin_msg);
 

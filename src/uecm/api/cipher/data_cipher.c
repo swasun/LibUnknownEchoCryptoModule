@@ -27,11 +27,7 @@
 #include <uecm/factory/sym_key_factory.h>
 #include <uecm/impl/envelope/envelope_seal.h>
 #include <uecm/impl/envelope/envelope_open.h>
-#include <ueum/byte/byte_stream.h>
-#include <ueum/byte/byte_writer.h>
-#include <ueum/byte/byte_reader.h>
-#include <ueum/byte/byte_utility.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 #include <uecm/defines.h>
 #include <ei/ei.h>
 

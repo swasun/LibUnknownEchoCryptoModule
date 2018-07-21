@@ -18,7 +18,7 @@
  ******************************************************************************************/
 
 #include <uecm/api/key/asym_key.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
 
 uecm_asym_key *uecm_asym_key_create(uecm_public_key *pk, uecm_private_key *sk) {

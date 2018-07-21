@@ -25,7 +25,7 @@
 #include <uecm/api/key/private_key.h>
 #include <uecm/api/certificate/x509_certificate.h>
 #include <uecm/api/keystore/pkcs12_keystore.h>
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 typedef struct {
     uecm_sym_key *sym_key;

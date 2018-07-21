@@ -19,8 +19,7 @@
 
 #include <uecm/api/encryption/sym_encrypter.h>
 #include <uecm/impl/errorHandling/openssl_error_handling.h>
-#include <ueum/alloc.h>
-#include <ueum/string/string_utility.h>
+#include <ueum/ueum.h>
 
 #include <ei/ei.h>
 

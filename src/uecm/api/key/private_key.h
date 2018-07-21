@@ -27,7 +27,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_PRIVATE_KEY_H
 #define UNKNOWNECHOCRYPTOMODULE_PRIVATE_KEY_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stdio.h>
 #include <stddef.h>

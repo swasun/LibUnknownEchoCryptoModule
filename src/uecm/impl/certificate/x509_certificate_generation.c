@@ -22,7 +22,7 @@
 #include <uecm/impl/key/rsa_keypair_generation.h>
 #include <uecm/utils/crypto_random.h>
 #include <ei/ei.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 #include <uecm/defines.h>
 
 #include <openssl/x509.h>

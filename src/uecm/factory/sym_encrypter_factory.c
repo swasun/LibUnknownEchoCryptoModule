@@ -18,9 +18,8 @@
  ******************************************************************************************/
 
 #include <uecm/factory/sym_encrypter_factory.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
-#include <ueum/string/string_utility.h>
 #include <uecm/defines.h>
 
 static uecm_sym_encrypter *uecm_sym_encrypter_create_factory(uecm_sym_key *key, const char *cipher_name) {

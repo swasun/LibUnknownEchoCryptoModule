@@ -18,7 +18,7 @@
  ******************************************************************************************/
 
 #include <uecm/api/certificate/x509_csr.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
 #include <uecm/impl/errorHandling/openssl_error_handling.h>
 

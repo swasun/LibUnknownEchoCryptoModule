@@ -20,7 +20,7 @@
 #include <uecm/api/signature/signer.h>
 #include <uecm/impl/errorHandling/openssl_error_handling.h>
 #include <ei/ei.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 
 #include <openssl/evp.h>
 

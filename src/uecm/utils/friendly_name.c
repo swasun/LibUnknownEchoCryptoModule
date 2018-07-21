@@ -19,7 +19,7 @@
 
 #include <uecm/utils/friendly_name.h>
 #include <ei/ei.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 
 #include <string.h>
 

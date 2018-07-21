@@ -19,8 +19,7 @@
 
 #include <uecm/api/certificate/x509_certificate_parameters.h>
 #include <uecm/utils/crypto_random.h>
-#include <ueum/alloc.h>
-#include <ueum/string/string_utility.h>
+#include <ueum/ueum.h>
 #include <uecm/defines.h>
 
 struct uecm_x509_certificate_parameters {

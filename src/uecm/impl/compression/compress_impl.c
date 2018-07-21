@@ -19,7 +19,7 @@
 
 #include <uecm/impl/compression/compress_impl.h>
 #include <uecm/impl/errorHandling/zlib_error_handling.h>
-#include <ueum/alloc.h>
+#include <ueum/ueum.h>
 
 #include <ei/ei.h>
 

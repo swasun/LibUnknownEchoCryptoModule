@@ -27,7 +27,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_CRYPTO_INIT_H
 #define UNKNOWNECHOCRYPTOMODULE_CRYPTO_INIT_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 bool uecm_crypto_init();
 

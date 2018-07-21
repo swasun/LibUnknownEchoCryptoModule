@@ -20,7 +20,7 @@
 #ifndef UNKNOWNECHOCRYPTOMODULE_COMPRESS_IMPL_H
 #define UNKNOWNECHOCRYPTOMODULE_COMPRESS_IMPL_H
 
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stdio.h>
 #include <stddef.h>

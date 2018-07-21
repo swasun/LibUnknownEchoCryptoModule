@@ -18,9 +18,7 @@
  ******************************************************************************************/
 
 #include <uecm/api/key/sym_key.h>
-#include <ueum/alloc.h>
-#include <ueum/byte/byte_utility.h>
-#include <ueum/string/string_utility.h>
+#include <ueum/ueum.h>
 #include <ei/ei.h>
 
 #define SYM_KEY_MIN_SIZE 32

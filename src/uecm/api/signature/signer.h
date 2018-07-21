@@ -29,7 +29,7 @@
 
 #include <uecm/api/key/public_key.h>
 #include <uecm/api/key/private_key.h>
-#include <ueum/bool.h>
+#include <ueum/ueum.h>
 
 #include <stddef.h>
 
