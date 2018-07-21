@@ -14,38 +14,38 @@
 # ==============================================================================
 
  ##########################################################################################
- # Copyright (C) 2018 by Charly Lamothe													  #
- #																						  #
- # This file is part of LibUnknownEchoCryptoModule.										  #
- #																						  #
+ # Copyright (C) 2018 by Charly Lamothe                                                   #
+ #                                                                                        #
+ # This file is part of LibUnknownEchoCryptoModule.                                       #
+ #                                                                                        #
  #   LibUnknownEchoCryptoModule is free software: you can redistribute it and/or modify   #
- #   it under the terms of the GNU General Public License as published by				  #
- #   the Free Software Foundation, either version 3 of the License, or					  #
- #   (at your option) any later version.												  #
- #																						  #
+ #   it under the terms of the GNU General Public License as published by                 #
+ #   the Free Software Foundation, either version 3 of the License, or                    #
+ #   (at your option) any later version.                                                  #
+ #                                                                                        #
  #   LibUnknownEchoCryptoModule is distributed in the hope that it will be useful,        #
- #   but WITHOUT ANY WARRANTY; without even the implied warranty of						  #
- #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the						  #
- #   GNU General Public License for more details.										  #
- #																						  #
- #   You should have received a copy of the GNU General Public License					  #
+ #   but WITHOUT ANY WARRANTY; without even the implied warranty of                       #
+ #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                        #
+ #   GNU General Public License for more details.                                         #
+ #                                                                                        #
+ #   You should have received a copy of the GNU General Public License                    #
  #   along with LibUnknownEchoCryptoModule.  If not, see <http://www.gnu.org/licenses/>.  #
  ##########################################################################################
 
 if (ZLIB_SYSTEM)
-	if (WIN32)
-		set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR "C:\\zlib\\$ENV{name}\\include")
+    if (WIN32)
+        set(LIBUNKNOWNECHOUTILSMODULE_INCLUDE_DIR "C:\\zlib\\$ENV{name}\\include")
         set(LIBUNKNOWNECHOUTILSMODULE_LIBRARIES "C:\\zlib\\$ENV{name}\\lib\\zlibstatic.lib")
-	else ()
-		find_package(PkgConfig)
-		pkg_search_module(ZLIB REQUIRED zlib)
-		set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
-		set(ADD_LINK_DIRECTORY ${ADD_LINK_DIRECTORY} ${ZLIB_LIBRARY_DIRS})
-		set(ADD_CFLAGS ${ADD_CFLAGS} ${ZLIB_CFLAGS_OTHER})
-		# To meet DEPENDS zlib from other projects.
-		# If we hit this line, zlib is already built and installed to the system.
-		add_custom_target(zlib)
-	endif ()
+    else ()
+        find_package(PkgConfig)
+        pkg_search_module(ZLIB REQUIRED zlib)
+        set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
+        set(ADD_LINK_DIRECTORY ${ADD_LINK_DIRECTORY} ${ZLIB_LIBRARY_DIRS})
+        set(ADD_CFLAGS ${ADD_CFLAGS} ${ZLIB_CFLAGS_OTHER})
+        # To meet DEPENDS zlib from other projects.
+        # If we hit this line, zlib is already built and installed to the system.
+        add_custom_target(zlib)
+    endif ()
 else (ZLIB_SYSTEM)
     include (ExternalProject)
 
