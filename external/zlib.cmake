@@ -53,7 +53,6 @@ else (ZLIB_SYSTEM)
     set(ZLIB_URL https://github.com/madler/zlib)
     set(ZLIB_BUILD ${ROOT_BUILD_DIR}/zlib/src/zlib)
     set(ZLIB_INSTALL ${ROOT_BUILD_DIR}/zlib/install)
-    # Match zlib version in tensorflow/workspace.bzl
     set(ZLIB_TAG v1.2.11)
 
     if (WIN32)
