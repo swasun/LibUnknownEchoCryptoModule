@@ -20,20 +20,20 @@
 #include <ei/ei.h>
 
 uecm_hasher *uecm_hasher_sha256_create() {
-    uecm_hasher *h;
+    uecm_hasher *hasher;
 
-    if ((h = uecm_hasher_create()) == NULL) {
+    if ((hasher = uecm_hasher_create()) == NULL) {
         ei_stacktrace_push_msg("Failed to create uecm_hasher");
         return NULL;
     }
 
-    if (!(uecm_hasher_init(h, "sha256"))) {
+    if (!(uecm_hasher_init(hasher, "sha256"))) {
         ei_stacktrace_push_msg("Failed to initialize uecm_hasher with SHA-256 algorithm");
-        uecm_hasher_destroy(h);
+        uecm_hasher_destroy(hasher);
         return NULL;
     }
 
-    return h;
+    return hasher;
 }
 
 uecm_hasher *uecm_hasher_default_create() {

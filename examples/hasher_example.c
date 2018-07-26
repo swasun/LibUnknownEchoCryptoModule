@@ -31,13 +31,13 @@ void print_usage(char *name) {
 
 int main(int argc, char **argv) {
     int exit_code;
-    uecm_hasher *h;
+    uecm_hasher *hasher;
     unsigned char *message, *digest;
     size_t message_length, digest_length;
     char *hex_digest;
 
     exit_code = EXIT_FAILURE;
-    h = NULL;
+    hasher = NULL;
     message = NULL;
     digest = NULL;
     message_length = 0;
@@ -70,21 +70,21 @@ int main(int argc, char **argv) {
     message_length = strlen(argv[1]);
 
     ei_logger_info("Creating new uecm_hasher");
-    if ((h = uecm_hasher_create()) == NULL) {
+    if ((hasher = uecm_hasher_create()) == NULL) {
         ei_stacktrace_push_msg("Failed to create uecm_hasher")
         goto clean_up;
     }
     ei_logger_info("Has successfully created a new uecm_hasher");
 
     ei_logger_info("Initializing uecm_hasher with SHA-256 digest algorithm");
-    if (!(uecm_hasher_init(h, "sha256"))) {
+    if (!(uecm_hasher_init(hasher, "sha256"))) {
         ei_stacktrace_push_msg("Failed to initialize uecm_hasher with SHA-256 algorithm")
         goto clean_up;
     }
     ei_logger_info("Has successfully initialized uecm_hasher");
 
     ei_logger_info("Hash processing...");
-    if ((digest = uecm_hasher_digest(h, message, message_length, &digest_length)) == NULL) {
+    if ((digest = uecm_hasher_digest(hasher, message, message_length, &digest_length)) == NULL) {
         ei_stacktrace_push_msg("Failed to hash message with SHA-256 digest algorithm")
         goto clean_up;
     }
@@ -103,7 +103,7 @@ clean_up:
     }
     ueum_safe_free(message)
     ueum_safe_free(digest)
-    uecm_hasher_destroy(h);
+    uecm_hasher_destroy(hasher);
     ueum_safe_free(hex_digest)
     uecm_uninit();
     ei_uninit();

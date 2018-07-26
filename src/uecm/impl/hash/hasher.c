@@ -41,24 +41,24 @@ uecm_hasher *uecm_hasher_create() {
     return hasher;
 }
 
-void uecm_hasher_destroy(uecm_hasher *h) {
-    if (h) {
-        EVP_MD_CTX_destroy(h->md_ctx);
-        ueum_safe_free(h);
+void uecm_hasher_destroy(uecm_hasher *hasher) {
+    if (hasher) {
+        EVP_MD_CTX_destroy(hasher->md_ctx);
+        ueum_safe_free(hasher);
     }
 }
 
-bool uecm_hasher_init(uecm_hasher *h, const char *digest_name) {
+bool uecm_hasher_init(uecm_hasher *hasher, const char *digest_name) {
     char *error_buffer;
 
     error_buffer = NULL;
 
-    if ((h->md_ctx = EVP_MD_CTX_create()) == NULL) {
+    if ((hasher->md_ctx = EVP_MD_CTX_create()) == NULL) {
         uecm_openssl_error_handling(error_buffer, "Initialisation of message digest context");
         return false;
     }
 
-    if ((h->type = EVP_get_digestbyname(digest_name)) == NULL) {
+    if ((hasher->type = EVP_get_digestbyname(digest_name)) == NULL) {
         uecm_openssl_error_handling(error_buffer, "Digest wasn't found");
         return false;
     }
@@ -66,29 +66,29 @@ bool uecm_hasher_init(uecm_hasher *h, const char *digest_name) {
     return true;
 }
 
-static unsigned char *build_digest(uecm_hasher *h, const unsigned char *message, size_t message_len, unsigned int *digest_len) {
+static unsigned char *build_digest(uecm_hasher *hasher, const unsigned char *message, size_t message_len, unsigned int *digest_len) {
     char *error_buffer;
     unsigned char *digest;
 
     error_buffer = NULL;
     digest = NULL;
 
-    if (EVP_DigestInit_ex(h->md_ctx, h->type, NULL) != 1) {
+    if (EVP_DigestInit_ex(hasher->md_ctx, hasher->type, NULL) != 1) {
         uecm_openssl_error_handling(error_buffer, "Initialisation of message digest function");
         return NULL;
     }
 
-    if (EVP_DigestUpdate(h->md_ctx, message, message_len) != 1) {
+    if (EVP_DigestUpdate(hasher->md_ctx, message, message_len) != 1) {
         uecm_openssl_error_handling(error_buffer, "Digest update");
         return NULL;
     }
 
-    if ((digest = (unsigned char *)OPENSSL_malloc(EVP_MD_size(h->type))) == NULL) {
+    if ((digest = (unsigned char *)OPENSSL_malloc(EVP_MD_size(hasher->type))) == NULL) {
         uecm_openssl_error_handling(error_buffer, "Allocation of digest string");
         return NULL;
     }
 
-    if (EVP_DigestFinal_ex(h->md_ctx, digest, digest_len) != 1) {
+    if (EVP_DigestFinal_ex(hasher->md_ctx, digest, digest_len) != 1) {
         uecm_openssl_error_handling(error_buffer, "Digest final step");
         return NULL;
     }
@@ -96,11 +96,11 @@ static unsigned char *build_digest(uecm_hasher *h, const unsigned char *message,
     return digest;
 }
 
-unsigned char *uecm_hasher_digest(uecm_hasher *h, const unsigned char *message, size_t message_len, size_t *digest_len) {
+unsigned char *uecm_hasher_digest(uecm_hasher *hasher, const unsigned char *message, size_t message_len, size_t *digest_len) {
     unsigned char *digest;
     unsigned int digest_len_tmp;
 
-    if ((digest = build_digest(h, message, message_len, &digest_len_tmp)) == NULL) {
+    if ((digest = build_digest(hasher, message, message_len, &digest_len_tmp)) == NULL) {
         ei_stacktrace_push_msg("Failed to build digest");
         return NULL;
     }
@@ -109,6 +109,6 @@ unsigned char *uecm_hasher_digest(uecm_hasher *h, const unsigned char *message, 
     return digest;
 }
 
-int uecm_hasher_get_digest_size(uecm_hasher *h) {
-    return EVP_MD_size(h->type);
+int uecm_hasher_get_digest_size(uecm_hasher *hasher) {
+    return EVP_MD_size(hasher->type);
 }
