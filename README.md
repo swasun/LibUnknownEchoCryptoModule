@@ -184,6 +184,16 @@ Run:
 	not logically part of it. Version 1.1.0.
 * [Zlib](https://github.com/madler/zlib) A massively spiffy yet delicately unobtrusive compression library. Version 1.2.11.
 
+# Architecture
+
+## Facade design pattern
+The facade design pattern is use to simplify the complexity of a module.
+In the module, we have 2 to 4 sub folders which are:
+* api: that contains the highest level of functions/structs of the module.
+* impl: that contains implementation(s) a api files.
+* factory (optional): that contains factories to create complex objects from the api files.
+* utils (optional): that contains utils functions only used in this module.
+
 # Cross-plateform
 
 Successfully tested on the following OS (on 64 bits):
