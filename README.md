@@ -44,7 +44,7 @@ Build in release mode:
 mkdir -p build/release
 cmake -Bbuild/release -H. -DCMAKE_BUILD_TYPE=Release
 cd build/release
-make
+cmake --build . --config Release
 ```
 
 Or build in debug mode:
@@ -52,7 +52,7 @@ Or build in debug mode:
 mkdir -p build/debug
 cmake -Bbuild/debug -H. -DCMAKE_BUILD_TYPE=Debug
 cd build/debug
-make
+cmake --build . --config Debug
 ```
 
 * By default, dependencies are built and install in the `build` directoy.
@@ -62,12 +62,12 @@ To install in another place, add `-DLIBEI_INSTALL=/usr` flag in `cmake` command.
 
 * To build with LIBUEUM already installed in the system, add `-DLIBUEUM_SYSTEM=TRUE` flag in `cmake` command.
 
-* Alternatively, you can build using `build_release.sh` and `build_debug.sh` scripts.
+* Alternatively, you can build using `build_release.<sh|bat>` and `build_debug.<sh|bat>` scripts.
 
 Finally, to install in the system:
 ```bash
 cd build/release
-sudo make install
+<sudo> cmake --build . --config Release --target install
 ```
 
 # Examples
