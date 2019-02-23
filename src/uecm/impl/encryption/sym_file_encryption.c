@@ -42,11 +42,11 @@ bool uecm_file_encrypt(const char *input_file_name, const char *output_file_name
     iv_length = EVP_CIPHER_iv_length(cipher);
     *iv_size = (size_t)iv_length;
     temp_iv = NULL;
-    ei_safe_alloc(temp_iv, unsigned char, *iv_size);
+    ueum_safe_alloc(temp_iv, unsigned char, *iv_size);
 
     if (!uecm_crypto_random_bytes(temp_iv, *iv_size)) {
         ei_stacktrace_push_msg("Failed to generate crypto random bytes for IV");
-        ei_safe_free(temp_iv);
+        ueum_safe_free(temp_iv);
         return false;
     }
 
